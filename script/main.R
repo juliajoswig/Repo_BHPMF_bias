@@ -12,8 +12,9 @@
 # 1. Create the data sets
 # 2. Set gaps (3 Repetitions)
 # 3. zlog transform 
-# 3. BHPMF impute
-# 4. Analyse & plot
+# 4. BHPMF impute
+# 5.  
+# 6. Analyse & plot
 
 
 # ------------------------------------------------------------------------------
@@ -59,9 +60,30 @@
 # *** Obs_obs refers to the ExTD (ExTD2) and Obs_obs_TD refers to TD (TD2)
 
 
-"traitInfo_log.csv"
+# ------------------------------------------------------------------------------
+# 3. zlog transform
+# ------------------------------------------------------------------------------
+# loads "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/traitInfo.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/traitInfo_log.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/traitInfo_zlog.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/zlog_transform.RData"
+
 
 # ------------------------------------------------------------------------------
-# 3. BHPMF impute
+# 4.  BHPMF imputes
 # ------------------------------------------------------------------------------
+# requires "BHPMF"
+# loads "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/taxInfo.csv"
+# loads "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/traitInfo_zlog.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/mean.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/sd.csv"
+# * "data" and "data_2" refers to TD and TD2
+# ** missingness levels from 0 to 80%
+# *** Obs_obs refers to the ExTD (ExTD2) and Obs_obs_TD refers to TD (TD2)
 
+
+# ------------------------------------------------------------------------------
+# 4.  BHPMF imputes
+# ------------------------------------------------------------------------------
+# requires "BHPMF"
+# loads "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/taxInfo.csv"
