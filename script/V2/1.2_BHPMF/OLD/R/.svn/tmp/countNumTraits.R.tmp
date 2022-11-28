@@ -1,0 +1,34 @@
+countNumTraits <- function(X){
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #find number of traits for each observation
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    numRows = nrow(X);
+    noTraits = rep(0, times = numRows);
+    traitIds = vector('list', numRows);
+
+    for (plantId in 1 : numRows){
+        
+        traitId = which(!is.na(X[plantId, ]));
+
+        traitIds[[plantId]] = traitId;
+        noTraits[plantId] = length(traitId);
+    }
+
+<<<<<<< .working
+	if(flagNan){
+		cc = hist(noTraits, max(noTraits), xlab = " Number of available traits for each observation", main = "", axes=F)
+		axis(2)
+		axis(1, at=seq(0, numCols, 1))
+
+=======
+    cc = hist(noTraits, max(noTraits));
+>>>>>>> .merge-right.r26
+		print(cc)
+	}
+
+    indObs = which(noTraits > 0);
+
+    return(list(noTraits ,indObs ,traitIds))
+    
+}

@@ -1,0 +1,205 @@
+splitData <- function(permutMatTest, permutMatV, noTraits, X, zsLogX, traitsName, name, treeFile, inputDir, secondCV, testFlag, level){
+
+	cat(paste("\n name: ", name))
+	cat(paste("\n treeFile: ", treeFile))
+    if (testFlag){
+        #generate all test, and validation
+        numTrials = ncol(permutMatTest);
+
+        ii3 = which(noTraits >= 3);
+        
+        jj3Test = matrix(permutMatTest[ii3, ], ncol = ncol(permutMatTest));
+        jjValid = matrix(permutMatV[ii3, ], ncol = ncol(permutMatV));
+        
+        iiValid = matrix(rep(ii3, numTrials), nrow = length(ii3), ncol = numTrials);
+        
+        #       iiValid = repmat(ii3', 1, numTrials);
+
+        if(nchar(treeFile) != 0 && is.character(treeFile)){
+            load(treeFile)
+        }
+
+        ii2 = which(noTraits == 2);
+        
+        #iiTest = [repmat(ii3', 1, numTrials); repmat(ii2', 1, numTrials)];
+        iiTest = matrix(rep(ii2, numTrials), nrow = length(ii2), ncol = numTrials);
+        iiTest = rbind(iiValid, iiTest);
+    
+        #jjTest = [ jj3Test; permutMatTest(ii2, :)];
+        jjTest = matrix(permutMatTest[ii2, ], ncol = ncol(permutMatTest));
+        jjTest = rbind(jj3Test, jjTest);
+    }
+    else{
+
+        #generate only validation
+
+        numTrials = ncol(permutMatV);
+
+        ii2 = which(noTraits >= 2);
+        jjValid = matrix(permutMatV[ii2, ], ncol = ncol(permutMatV));
+        
+        iiValid = matrix(rep(ii2, numTrials), nrow = length(ii2), ncol = numTrials);
+        
+        #        iiValid = repmat(ii2', 1, numTrials);
+        
+            if(nchar(treeFile) != 0 && is.character(treeFile)){
+            load(treeFile)
+        }
+
+        iiTest = matrix(0,0,0);
+        jjTest = matrix(0,0,0);
+    }
+
+    if (secondCV < 0){
+		allzsLogYtrain = vector('list', numTrials);
+		allzsLogYtest = vector('list', numTrials);
+		allzsLogYv = vector('list', numTrials);
+    }
+    
+    print(numTrials)
+
+    numElem = nrow(X) * ncol(X);
+    subIdx = matrix(1:numElem, nrow(X), ncol(X));
+    
+    testLen = nrow(iiTest);
+    valLen = nrow(iiValid);
+    trainLen = numElem - testLen - valLen;
+    print(testLen)
+    
+    indTest =  matrix(numeric(0), testLen, numTrials);
+    indValid = matrix(numeric(0), valLen, numTrials);
+    indTrain = matrix(numeric(0), trainLen, numTrials);
+    
+
+    for (trial in 1 : numTrials){
+
+        zsLogXtrain = matrix(0, nrow(X), ncol(X));
+        zsLogXtest = matrix(0, nrow(X), ncol(X));
+        zsLogXv = matrix(0, nrow(X), ncol(X));
+
+        indValid[, trial] = subIdx[cbind(iiValid[, trial], jjValid[, trial])];
+
+        if (testFlag){
+            indTest[, trial] = subIdx[cbind(iiTest[, trial], jjTest[, trial])];
+            zsLogXtest[indTest[, trial]] = zsLogX[indTest[, trial]];
+            Idx <- which(zsLogXtest != 0, arr.ind=TRUE);
+            zsLogYtest = cbind(Idx, zsLogXtest[Idx]);
+            rm(Idx);
+            #[zsLogYtest(:,1), zsLogYtest(:,2), zsLogYtest(:,3)] = find(zsLogXtest);
+            
+
+            indTrain[, trial] = setdiff(1:numElem, rbind(indTest[, trial], indValid[, trial]));
+            zsLogXtrain[indTrain[, trial]] = zsLogX[indTrain[, trial]];
+            Idx <- which(zsLogXtrain != 0, arr.ind=TRUE);
+            zsLogYtrain = cbind(Idx, zsLogXtrain[Idx]);
+            rm(Idx);
+            #[zsLogYtrain(:,1), zsLogYtrain(:,2), zsLogYtrain(:,3)] = find(zsLogXtrain);
+            
+        }
+        else{
+            
+            indTrain[, trial] = setdiff(1:numElem, indValid[, trial]);
+            zsLogXtrain[indTrain[, trial]] = zsLogX[indTrain[, trial]];
+            Idx <- which(zsLogXtrain != 0, arr.ind=TRUE);
+            zsLogYtrain = cbind(Idx, zsLogXtrain[Idx]);
+            rm(Idx);
+            
+            zsLogYtest = matrix(numeric(0), 0, 0);
+            
+        }
+
+        zsLogXv[indValid[, trial]] = zsLogX[indValid[, trial]];
+        Idx <- which(zsLogXv != 0, arr.ind=TRUE);
+        zsLogYv = cbind(Idx, zsLogXv[Idx]);
+        rm(Idx);
+        
+        if (secondCV != 0){
+        
+			cat(secondCV)
+			cat("\t")
+			if(secondCV < 0){
+				idxTrial = trial;
+				allzsLogYtrain[[idxTrial]] = zsLogYtrain;
+				allzsLogYtest[[idxTrial]] = zsLogYtest;
+				allzsLogYv[[idxTrial]] = zsLogYv;
+				datasetId = -secondCV;
+			}
+			else{
+				idxTrial = secondCV;
+				datasetId = treeFile;
+			}
+			cat(trial)
+			cat("\t")
+			cat(idxTrial)
+			cat("\t")
+			
+ 			dirName = paste(inputDir, "/fold", datasetId, "/Tunning/cv", idxTrial, sep = "")
+ 			if(!file.exists(dirName))
+				dir.create(dirName)
+			#cvFile = paste(inputDir, "/cv", idxTrial, "/dataset", datasetId, "_zsLogYtrain", level, ".txt", sep = "")
+			cvFile = paste(dirName, "/zsLogYtrain", level, ".txt", sep = "")
+			write.table(zsLogYtrain, file=cvFile, sep="\t", col.names = F, row.names = F)
+
+			cat(cvFile)
+			cat("\n")
+#			cvFile = paste(inputDir, "/cv", idxTrial, "/dataset", datasetId, "_zsLogYtest", level, ".txt", sep = "")
+			cvFile = paste(dirName, "/zsLogYtest", level, ".txt", sep = "")
+			write.table(zsLogYtest, file=cvFile, sep="\t", col.names = F, row.names = F)
+			
+#			cvFile = paste(inputDir, "/cv", idxTrial, "/dataset", datasetId, "_zsLogYv", level, ".txt", sep = "")
+			cvFile = paste(dirName, "/zsLogYv", level, ".txt", sep = "")
+			write.table(zsLogYv, file=cvFile, sep="\t", col.names = F, row.names = F)				
+        
+        }
+
+        else{
+
+			
+            if(nchar(treeFile) != 0 && is.character(treeFile)){
+                fileName <- paste(name, trial, ".Rda", sep="");
+                
+                save(file = fileName, list = c('X', 'Y', 'logm', 'logs', 'traitNames', 'treeIds', 'zsLogX', 'zsLogY', 'zsLogYtrain', 'zsLogYtest', 'zsLogYv'))
+				print("done!")
+            }
+
+			if(is.character(treeFile))
+				datasetId = trial
+			else
+				datasetId = treeFile
+            
+            dirName = paste(inputDir, "/fold", datasetId, sep = "")
+            if(!file.exists(dirName))
+				dir.create(dirName)
+            
+#            cvFile = paste(inputDir, "/dataset", datasetId, "_zsLogYtrain", level, ".txt", sep = "")
+            cvFile = paste(dirName, "/zsLogYtrain", level, ".txt", sep = "")
+            cat(cvFile)
+			write.table(zsLogYtrain, file=cvFile, sep="\t", col.names = F, row.names = F)
+			
+#			cvFile = paste(inputDir, "/dataset", datasetId, "_zsLogYtest", level, ".txt", sep = "")
+			cvFile = paste(dirName, "/zsLogYtest", level, ".txt", sep = "")
+			write.table(zsLogYtest, file=cvFile, sep="\t", col.names = F, row.names = F)
+			
+#			cvFile = paste(inputDir, "/dataset", datasetId, "_zsLogYv", level, ".txt", sep = "")
+			cvFile = paste(dirName, "/zsLogYv", level, ".txt", sep = "")
+			write.table(zsLogYv, file=cvFile, sep="\t", col.names = F, row.names = F)			
+            
+        }
+
+    }
+
+    if (secondCV < 0){
+		
+		
+        vars = c('allzsLogYtrain', 'allzsLogYtest', 'allzsLogYv');
+        
+        env.tmp = new.env()
+		old.objects <- load(name, env.tmp)
+        save(list = c(old.objects, vars), file = name, envir = env.tmp)
+        
+   #     lapply(vars, append.Rda, file = name);
+    }
+
+    return(list(indValid, indTest, indTrain));
+    
+}

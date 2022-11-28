@@ -1,0 +1,80 @@
+buildUpperLevelMat <- function(inputDir, cvInd, traitNames, numLevels, numFolds){
+
+	testFlag <- 0;
+	
+	#inputDir <- "../data"
+	fileName <- paste(inputDir, '/phylo_ids_trees.Rda', sep = "");
+	load(fileName);
+	
+	#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	#create upper level Matrices
+	#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	for (datasetId in 1 : numFolds){
+	
+		cat(datasetId)
+		fileName <- paste(inputDir, "/traits_trees_atleastone_", datasetId, ".Rda", sep = "");
+	
+	    tmp <- load(fileName);
+	    if(cvInd > 0){
+			tr <- rbind(allzsLogYtrain[[cvInd]], allzsLogYtrain[[cvInd]]);
+			secondCV = cvInd;
+	    }
+	    else{
+			tr <- rbind(zsLogYtrain, zsLogYv);
+			secondCV = 0;
+	    }
+	    rm(list = tmp);
+	        
+	    zsLogX <- as.matrix(sparseMatrix(tr[,1], tr[,2], x = tr[,3]));
+	    rm(tr)
+	
+	    numTraits <- ncol(zsLogX);
+	
+		
+		for (level in 1 : (numLevels-1)){
+		
+			msg = paste("building upper level matrix at level ", level, "\n");
+			cat(msg)
+	 	    #%%%%%%%%%%%%%%%%%
+		    #create upper level matrix at level
+		    #%%%%%%%%%%%%%%%%%
+		    numSpecies <- length(levelNames[[numLevels-level]]);
+	#	    treeinds_eachspecies <- vector('list', numSpecies);
+		
+		    zsLogXSpecies <- matrix(numeric(0), numSpecies, numTraits);
+		    for (ind in 1 : numSpecies){
+		    
+		       treeinds_eachspecies <- which(phyinfo[, level] == ind);
+			
+			   info <- zsLogX[treeinds_eachspecies, ];
+			   
+			   if(length(treeinds_eachspecies) == 1)
+					info = t(as.matrix(info, nrow = 1, ncol = length(info)));
+				
+		       for (trait in 1: numTraits){
+		           ss <- sum(info[,trait]);
+		           len <- length(which(info[,trait] != 0));
+		           zsLogXSpecies[ind, trait] <- ss / len;          
+		       }
+#~ 		       if(length(which(zsLogXSpecies[ind,] != 0) != 0)){
+#~ 					cat(ind)
+#~ 					cat("error in averaging")
+#~ 				}
+					
+		            
+		    }
+		
+		    zsLogXSpecies[is.nan(zsLogXSpecies)] <- 0;
+		    
+		    #%%%%%%%%%%%%%%%%%%%%%%%%
+			#split datasets
+			#%%%%%%%%%%%%%%%%%%%%%%%%
+		    numFolds <- 1;
+		    
+		    findFolds(zsLogXSpecies, numFolds, '', datasetId, '', inputDir, secondCV, traitNames, testFlag,  numLevels-level);
+		    	
+		}
+		
+	}
+}

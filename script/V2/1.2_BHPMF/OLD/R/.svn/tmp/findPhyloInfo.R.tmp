@@ -1,0 +1,181 @@
+
+phyVar <- c('Observation', 'AccSpeciesName', 'Type', 'Genus', 'Family', 'PhylogeneticGroup');
+
+inputDir <- '../data';
+fileName <- paste(inputDir, '/phyAllInfo.txt', sep = "")
+
+phyInfoAll = read.table(fileName, sep = "\t");
+
+
+fileName = paste(inputDir, '/freqObsNoTraits_pmf.Rda', sep = "");
+tmp = load(fileName)
+
+phyInfoAll <- phyInfoAll[indObs, ];
+rm(list = tmp);
+rm(tmp)
+
+treeIds <- phyInfoAll[,1];
+speciesType <- phyInfoAll[, 2];
+type <- phyInfoAll[,3];
+genus <- phyInfoAll[,4];
+family <- phyInfoAll[, 5];
+phylogeneticGroup <- phyInfoAll[,6];
+species <- speciesType;
+
+speciesName <- unique(species);
+genusName <- unique(genus);
+familyName <- unique(family);
+phylogeneticGroupName <- unique(phylogeneticGroup);
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at plant level
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<<<<<< .working
+len = length(treeIds);
+#phyinfo <- matrix(numeric(0), len, numLevels-1);
+writPhyinfo <- matrix(numeric(0), len, 3);
+for (ind in 1: len){ 
+=======
+>>>>>>> .merge-right.r26
+
+phyinfo <- matrix(numeric(0), length(treeIds), 4);
+for (ind in 1: length(treeIds)){
+    phyinfo[ind,1] <- which(speciesName == species[ind]) ;    #species
+
+<<<<<<< .working
+    
+=======
+    phyinfo[ind,2] <- which(genusName == genus[ind]) ;    #genus
+
+    phyinfo[ind,3] <- which(familyName == family[ind]) ;    #family
+
+    phyinfo[ind,4] <- which(phylogeneticGroupName == phylogeneticGroup[ind]);     #phy group
+>>>>>>> .merge-right.r26
+}
+
+<<<<<<< .working
+filename = paste(inputDir, "/phyinfo", numLevels, "_", numLevels-1, sep = "") 
+write.table(writPhyinfo, file = filename, sep = "\t", col.names = F, row.names = F);
+rm(writPhyinfo)
+=======
+>>>>>>> .merge-right.r26
+
+fileName <- paste(inputDir, '/phylo_ids_trees.Rda', sep="");
+<<<<<<< .working
+save(file = fileName, list = c('phyinfo', 'levelNames', 'phyInfoAll' ,'treeIds'))
+=======
+save(file = fileName, list = c('phyinfo', 'speciesName', 'genusName', 'familyName', 'phylogeneticGroupName', 'phyInfoAll' ,'treeIds' ,'phyVar'))
+>>>>>>> .merge-right.r26
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at species level
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+phyinfoPlant <- phyinfo;
+phyinfo <- matrix(numeric(0), length(speciesName), 3);
+
+index <- 1:length(treeIds);
+
+
+for (ind in 1 : length(speciesName)){
+    
+    idx <- index[phyinfoPlant[ ,1] == ind];  #index of all plants belong to species ind
+
+    myGenus = unique(phyinfoPlant[idx, 2]);   #check if genus information is unique
+    if (length(myGenus) > 1){
+        print(paste("Error in Taxonomic: species '",speciesName[ind], "' belongs to more than one genus:"))
+        print(paste(genusName[myGenus]))
+        break
+    }
+
+    phyinfo[ind, 1] <- myGenus;
+
+    myFamily <- unique(phyinfoPlant[idx, 3]);   #check if family information is unique
+    if (length(myFamily) > 1){
+        print(paste("Error in Taxonomic: species '",speciesName[ind], "' belongs to more than one family:"))
+        paste(familyName[myFamily])
+        break
+    }
+
+    phyinfo[ind,2] <- myFamily;
+
+    myGroup <- unique(phyinfoPlant[idx, 4]);  #check if phylo group information is unique
+    if (length(myGroup) > 1){
+        print(paste("Error in Taxonomic: species '",speciesName[ind], "' belongs to more than one phylogenetic Group:"))
+        print(paste(phylogeneticGroupName[myGroup]))
+        break
+    }
+
+    phyinfo[ind,3] <- myGroup;
+
+}
+
+
+fileName <- paste(inputDir, '/phylo_ids_species.Rda', sep = "");
+save(file = fileName, list = c('phyinfo', 'speciesName', 'genusName', 'familyName', 'phylogeneticGroupName', 'phyInfoAll' ,'treeIds' ,'phyVar'));
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at genus level
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+phyinfo <- matrix(numeric(0), length(genusName), 2);
+
+index <- 1:length(treeIds);
+
+
+
+for (ind in 1 : length(genusName)){
+    
+    idx = index[phyinfoPlant[ ,2] == ind];  #index of all observation for genus ind
+
+    myFamily = unique(phyinfoPlant[idx, 3]); #check if family information is unique
+    if (length(myFamily) > 1){
+        print(paste("Error in Taxonomic: Genus '", genusName[ind], "'belongs to more than one family:"))
+        print(paste(familyName[myFamily]))
+        break
+    }
+
+    phyinfo[ind,1] <- myFamily;
+
+    myGroup = unique(phyinfoPlant[idx, 4]);  #check if phylo group information is unique
+    if (length(myGroup) > 1){
+        print(paste("Error in Taxonomic: Genus '", genusName[ind], "'belongs to more than one phylogenetic group:"))
+        print(paste(phylogeneticGroupName[myGroup]))
+        break
+    }
+
+    phyinfo[ind,2] = myGroup;
+
+}
+
+fileName = paste(inputDir, '/phylo_ids_genus.Rda', sep = "");
+save(file = fileName, list = c('phyinfo', 'speciesName', 'genusName', 'familyName', 'phylogeneticGroupName', 'phyInfoAll' ,'treeIds' ,'phyVar'))
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at family level
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+phyinfo <- matrix(numeric(0), length(familyName), 1);
+
+
+index <- 1:length(treeIds);
+
+for (ind in 1 : length(familyName)){
+    
+    idx = index[phyinfoPlant[ ,3] == ind];  #index of all plants for family ind
+
+    myGroup = unique(phyinfoPlant[idx, 4]);  #check if phylo group information is unique
+    if (length(myGroup) > 1){
+        print(paste("Error in Taxonomic: Family '", familyName[ind], "'belongs to more than one phylogenetic group:"))
+        print(paste(phylogeneticGroupName[myGroup]))
+        break
+    }
+    
+    phyinfo[ind, 1] = myGroup;
+    
+}
+
+fileName = paste(inputDir, '/phylo_ids_family.Rda', sep = "");
+save(file = fileName, list = c('phyinfo', 'speciesName', 'genusName', 'familyName', 'phylogeneticGroupName', 'phyInfoAll' ,'treeIds' ,'phyVar'));

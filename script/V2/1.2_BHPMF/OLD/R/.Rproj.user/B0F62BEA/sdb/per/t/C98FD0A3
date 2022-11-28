@@ -1,0 +1,17 @@
+{
+    "contents" : "###################\n# this script has to be run from the R directory of the dataset\n\n\nmessage(Sys.time(), \": Loading data\")\nsource(\"transform_back.R\")\nsource(\"gap_filling.R\")\nX    <- as.matrix(read.table(\"../data/traitInfo.txt\", header = F, sep = \"\\t\"))[,-1]\nhier <-           read.table(\"../data/phyAllInfo.txt\",sep = \"\\t\")\n\nif(!file.exists(\"../data/output\")) dir.create(\"../data/output\")\n\nif(typeof(X) != \"double\")       stop(\"X must be of type double\")\nif(class(hier) != \"data.frame\") stop(\"hier must be of class data.frame\")\nif(nrow(X) != nrow(hier))       stop(\"hier and X must have the same number of rows\")\n\n#apply(hier,2, function(x) sum(is.na(x)))\n\n\nback_trans_pars <- list()\n# transform data and \n# TODO!!! save data for backtransformation\nrm_col <- c()\nfor(i in 1:ncol(X)){\n  x <- X[,i]\n  min_x <- min(x,na.rm = T)\n  x <- x - min_x + 1  # make this optional?\n  logx <- log(x)\n  mlogx <- mean(logx, na.rm = T)\n  slogx <- sd(logx, na.rm = T)\n  x <- (logx - mlogx)/slogx\n  back_trans_pars[[i]] <- list(min_x = min_x,\n                               mlogx = mlogx,\n                               slogx = slogx)\n  X[,i] <- x\n}\n\nsave(back_trans_pars, file = \"../data/output/back_trans_pars.RData\")\n\ntmp_dir = \"../data\"\nmessage(\"Intermediate results are saved in: \", tmp_dir)\n \n\n\nmessage(Sys.time(), \": Starting GapFilling()\")\n\npdf(\"../data/output/plot.pdf\")\n\nGapFilling(X, \n           hier, \n           num.samples                 = 5000, \n           burn                        = 100, \n           gaps                        = 2,\n           num.latent.feats            = 10, \n           tuning                      = FALSE, \n           num.folds                   = 5, \n           tmp.dir                     = \"../data\",\n           mean.gap.filled.output.path = \"../data/output/mean_gap_filled.txt\", \n           std.gap.filled.output.path  = \"../data/output/std_gap_filled.txt\",\n           rmse.plot.test.data         = TRUE)\n\ndev.off()\n\nX_ <- read.table(\"../data/output/mean_gap_filled.txt\", header = T, sep = \"\\t\")\n\nX_ <- transform_back(X_, back_trans_pars)\n\nwrite.table(X_, file = \"../data/output/mean_gap_filled_back_trans.txt\", \n            sep = \"\\t\", row.names = F,\n            quote = F)\n\nmessage(Sys.time(), \": DONE\")\n\n\n\n\n",
+    "created" : 1439197603021.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1540109577",
+    "id" : "C98FD0A3",
+    "lastKnownWriteTime" : 1439201895,
+    "path" : "M:/projects/FDiversity/hierarchy/hpmf_method_paper/scripts/HPMF_v1.6/R/gapfill.R",
+    "project_path" : "gapfill.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

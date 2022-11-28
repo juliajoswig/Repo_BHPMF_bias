@@ -1,0 +1,129 @@
+phyVar <- c('Observation', 'AccSpeciesName', 'Genus', 'Family', 'PhylogeneticGroup');
+
+inputDir <- '../data';
+numLevels = length(phyVar);
+print(numLevels)
+fileName <- paste(inputDir, '/phyAllInfo.txt', sep = "")
+
+phyInfoAll = read.table(fileName, sep = "\t");
+
+#fileName <- paste(inputDir, '/phyinfo.txt', sep = "")
+#phyinfo = as.matrix(read.table(fileName, sep = "\t"));
+
+
+fileName = paste(inputDir, '/freqObsNoTraits_pmf.Rda', sep = "");
+tmp = load(fileName)
+
+phyInfoAll <- phyInfoAll[indObs, ];
+
+filename = paste(inputDir, "/phyinfoAllMod", sep = "")
+write.table(phyInfoAll, file = filename, sep = "\t", col.names = F, row.names = F);
+rm(phyInfoAll)
+
+phyInfoAll = read.table(filename, sep = "\t");
+
+rm(list = tmp);
+rm(tmp)
+
+#idx <- c(1, 2, 4, 5, 6);
+
+#phyInfoAll <- phyInfoAll[,idx]
+
+treeIds <- phyInfoAll[,1];
+
+levelNames = vector("list", numLevels-1);
+for(level in 2 : numLevels){
+	levelNames[[numLevels-level+1]] <- sort(unique(phyInfoAll[,level]));
+}
+
+len = length(treeIds);
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#change the string names to index
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+phyinfo <- matrix(numeric(0), len, numLevels-1);
+
+for(level in seq(1, numLevels-1, by = 1)){
+	  tmp = c(phyInfoAll[, level+1])
+	  phyinfo[, level] <- c(tmp);
+}
+
+write.table(phyinfo, file = "../data/phyInfoAllIdx", sep = "\t", col.names = F, row.names = F);
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at plant level
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#len = length(treeIds);
+#phyinfo <- matrix(numeric(0), len, numLevels-1);
+writPhyinfo <- matrix(numeric(0), len, 3);
+for (ind in 1: len){
+  
+    writPhyinfo[ind, 1] = 0; #number of children
+    writPhyinfo[ind, 2] = 1;
+    writPhyinfo[ind, 3] = phyinfo[ind, 1]; #parent Id
+
+}
+
+filename = paste(inputDir, "/phyinfo", numLevels, "_", numLevels-1, sep = "") 
+write.table(writPhyinfo, file = filename, sep = "\t", col.names = F, row.names = F);
+rm(writPhyinfo)
+
+fileName <- paste(inputDir, '/phylo_ids_trees.Rda', sep="");
+save(file = fileName, list = c('phyinfo', 'levelNames', 'phyInfoAll' ,'treeIds' ,'phyVar'))
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find phylo info at higher levels
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+index <- 1:length(treeIds);
+phyinfoPlant <- phyinfo;
+oldChildInfo = c(0);
+for(level in seq(numLevels-1, 2, by = -1)){ # for each level
+
+	cat(level)
+
+	len = length(levelNames[[level]]);
+	phyinfo <- matrix(numeric(0), len, 3);
+	
+	newChildInfo <- rep(0, length(levelNames[[level-1]]));
+	
+	for (ind in 1 : len){
+	    
+	        idx <- index[phyinfoPlant[ , numLevels-level] == ind];  #index of all plants belong to species ind
+	
+#		for(lev in seq(level-1, 1, by = -1)){
+		parId = unique(phyinfoPlant[idx, numLevels-level+1]);   #check if genus information is unique
+		if (length(parId) > 1){
+			print(paste("Error in Taxonomic: species '",levelNames[[leve]][ind], "' at level ", level, " belongs to more than one group :"))
+			print(paste(levelNames[[level-1]][parId]))
+			break
+		}
+	
+		#add number of children
+		if(level == numLevels-1){
+			phyinfo[ind, 1] = length(idx);
+		}
+		else{
+			phyinfo[ind, 1] = oldChildInfo[ind];
+		}
+		
+		phyinfo[ind, 2] = 1;			
+		phyinfo[ind, 3] = parId;
+		
+		
+		newChildInfo[parId] = newChildInfo[parId] + 1;
+	
+			#phyinfo[ind, lev-1] <- myGenus;
+	}
+		
+	rm(oldChildInfo)
+	oldChildInfo = newChildInfo;
+	
+	filename = paste(inputDir, "/phyinfo", level, "_", level-1, sep = "") 
+	write.table(phyinfo, file = filename, sep = "\t", col.names = F, row.names = F);
+}
+
+phyinfo = cbind(oldChildInfo, rep(0, length(levelNames[[1]])), rep(0, length(levelNames[[1]])))
+filename = paste(inputDir, "/phyinfo", 1, "_", 0, sep = "") 
+write.table(phyinfo, file = filename, sep = "\t", col.names = F, row.names = F);

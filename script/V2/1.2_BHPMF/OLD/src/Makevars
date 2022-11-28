@@ -1,0 +1,17 @@
+#g++=g++-4.7
+#gcc=gcc-4.7
+
+
+#all: $(SHLIB)
+#MYCXXFLAGS=-O0
+
+#PKG_CPPFLAGS=-O0 -Wall
+#PKG_CXXFLAGS=-O0
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS)
+PKG_CXXFLAGS=-std=c++0x -fopenmp
+#PKG_CXXFLAGS=-fopenmp
+
+#%.o: %.cpp
+#         $(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o  $@
+#PKG_LIBS = $(LAPACK_LIBS)
+#CXXFLAGS=-g -O0

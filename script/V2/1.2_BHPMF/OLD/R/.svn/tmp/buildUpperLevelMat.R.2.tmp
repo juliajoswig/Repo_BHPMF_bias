@@ -1,0 +1,236 @@
+
+testFlag <- 0;
+
+inputDir <- "../data"
+fileName <- paste(inputDir, '/phylo_ids_trees.Rda', sep = "");
+load(fileName);
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#create upper level Matrices
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for (datasetId in 1 : numDatasets){
+
+    fileName <- paste(inputDir, "/traits_trees_atleastone_", datasetId, ".Rda", sep = "");
+    
+
+    tmp <- load(fileName);
+    tr <- rbind(zsLogYtrain, zsLogYv);
+    rm(list = tmp);
+        
+    zsLogX <- sparseMatrix(tr[,1], tr[,2], x = tr[,3]);
+    rm(tr)
+
+    numTraits <- ncol(zsLogX);
+
+    #%%%%%%%%%%%%%%%%%
+    #create species level Mat
+    #%%%%%%%%%%%%%%%%%
+    numSpecies <- length(speciesName);
+    treeinds_eachspecies <- vector('list', numSpecies);
+
+    zsLogXSpecies <- matrix(numeric(0), numSpecies, numTraits);
+    for (ind in 1 : numSpecies){
+    
+       treeinds_eachspecies[[ind]] <- which(phyinfo[, 1] == ind);
+
+       info <- zsLogX[treeinds_eachspecies[[ind]], ];
+       
+       for (trait in 1: numTraits){
+           ss <- sum(info[trait]);
+           len <- length(which(info[trait] != 0));
+           zsLogXSpecies[ind, trait] <- ss / len;          
+       }
+            
+    }
+
+    zsLogXSpecies[is.nan(zsLogXSpecies)] <- 0;
+    
+    fileName <- paste(inputDir, '/treeinds_eachspecies.Rda', sep = "");
+    save(file = fileName, 'treeinds_eachspecies')
+    
+    fileName <- paste(inputDir, "/upperLevelMat_", datasetId, '.Rda', sep = "");
+    save(file = fileName, list = c('zsLogXSpecies', 'treeinds_eachspecies'))
+   
+    
+    #%%%%%%%%%%%%%%%%%
+    #create genus level Mat
+    #%%%%%%%%%%%%%%%%%
+  
+    numGenus <- length(genusName);
+    speciesinds_eachgenus <- vector('list', numGenus);
+    
+    zsLogXGenus = matrix(numeric(0), numGenus, numTraits);
+
+    for (ind in 1 : numGenus){
+       speciesinds_eachgenus[[ind]] <- which(phyinfo[, 2] == ind);
+
+       info <- zsLogX[speciesinds_eachgenus[[ind]], ];
+       
+       for (trait in 1: numTraits){
+           ss <- sum(info[ trait]);
+           len <- length(which(info[trait] != 0));
+           zsLogXGenus[ind, trait] <- ss / len;
+       }
+            
+    }
+    
+    
+    zsLogXGenus[is.nan(zsLogXGenus)] <- 0;
+    fileName <- paste(inputDir, '/upperLevelMat_', datasetId, '.Rda', sep = "");
+    vars = c('zsLogXGenus', 'speciesinds_eachgenus');
+    lapply(vars, append.Rda, file = fileName)
+    
+    #%%%%%%%%%%%%%%%%%
+    #create family level Mat
+    #%%%%%%%%%%%%%%%%%
+ 
+    numFamily <- length(familyName);
+    genusinds_eachfamily <- vector('list', numFamily);
+    
+    zsLogXFamily = matrix(numeric(0), numFamily, numTraits);
+    for (ind in 1 : numFamily){
+        genusinds_eachfamily[[ind]] = which(phyinfo[, 3] == ind);
+
+        info = zsLogX[genusinds_eachfamily[[ind]], ];
+       
+        for (trait in 1: numTraits){
+           ss <- sum(info[ trait]);
+           len <- length(which(info[trait] !=0 ));
+           zsLogXFamily[ind, trait] = ss / len;
+        }
+    }
+        
+        
+    zsLogXFamily[is.nan(zsLogXFamily)] <- 0;
+    fileName <- paste(inputDir, '/upperLevelMat_', datasetId, '.Rda', sep = "");
+    vars = c('zsLogXFamily', 'genusinds_eachfamily');
+    lapply(vars, append.Rda, file = fileName)
+    
+
+    #%%%%%%%%%%%%%%%%%
+    #create group level Mat
+    #%%%%%%%%%%%%%%%%%
+
+    numGroup <- length(phylogeneticGroupName);
+    familyinds_eachgroup <- vector('list', numGroup);
+    
+
+    zsLogXGroup= matrix(numeric(0), numGroup, numTraits);
+    for (ind in 1 : numGroup){
+         familyinds_eachgroup[[ind]] <- which(phyinfo[, 4] == ind);
+
+         info <- zsLogX[familyinds_eachgroup[[ind]], ];
+       
+         for (trait in 1: numTraits){
+           ss <- sum(info[trait]);
+           len <- length(which(info[trait] != 0));
+           zsLogXGroup[ind, trait] <- ss / len;
+         }
+    }
+        
+    zsLogXGroup[is.nan(zsLogXGroup)] <- 0;
+    fileName <- paste(inputDir, '/upperLevelMat_', datasetId, '.Rda', sep = "");
+    vars = c('zsLogXGroup', 'familyinds_eachgroup');
+    lapply(vars, append.Rda, file = fileName)
+
+    #%%%%%%%%%%%%%%%%%
+    #Find Number of avail traits
+    #%%%%%%%%%%%%%%%%%
+    
+    res <- countNumTraits(zsLogXSpecies);
+    noTraitsSpec <- res[[1]];
+    traitIdsSpec <- res[[3]];
+    vars = c('noTraitsSpec', 'traitIdsSpec');
+    lapply(vars, append.Rda, file = fileName);
+    rm(res)
+
+    res = countNumTraits(zsLogXGenus);
+    noTraitsGenus <- res[[1]];
+    traitIdsGenus <- res[[3]];
+    vars = c('noTraitsGenus', 'traitIdsGenus');
+    lapply(vars, append.Rda, file = fileName);
+    rm(res)
+
+    res = countNumTraits(zsLogXFamily);
+    noTraitsFamily <- res[[1]];
+    traitIdsFamily <- res[[3]];
+    vars = c( 'noTraitsFamily', 'traitIdsFamily');
+    lapply(vars, append.Rda, file = fileName);
+    rm(res)
+    
+    res = countNumTraits(zsLogXGroup);
+    noTraitsGroup <-res[[1]];
+    traitIdsGroup <- res[[2]];
+    vars = c('noTraitsGroup', 'traitIdsGroup');
+    lapply(vars, append.Rda, file = fileName);
+    rm(res)
+}
+
+#%%%%%%%%%%%%%%%%%%%%%%%%
+#generate Permutation
+#%%%%%%%%%%%%%%%%%%%%%%%%
+
+numFolds <- 1;
+filename <- paste(inputDir, "/traits_trees_atleastone_1.Rda", sep = "");
+tmp = load(filename)
+traitName = traitNames;
+rm(list = tmp)
+traitNames = traitName;
+rm(traitName)
+
+for (datasetId in 1 : numDatasets){
+    
+#     clearvars -except traitNames datasetId testFlag numFolds excelfilename inputDir
+
+     fileName <- paste(inputDir, '/upperLevelMat_', datasetId, ".Rda", sep = "");
+     load(fileName)
+
+     res <- generatePermutation(noTraitsSpec, traitIdsSpec, numFolds, testFlag);
+     permutMatTestSpec <- res[[1]];
+     permutMatVSpec <- res[[2]];
+     vars <- c('permutMatTestSpec', 'permutMatVSpec');
+     lapply(vars, append.Rda, file = fileName);
+     rm(res);
+
+
+     res <- generatePermutation(noTraitsGenus, traitIdsGenus, numFolds, testFlag);
+     permutMatTestGenus <- res[[1]];
+     permutMatVGenus <- res[[2]];
+     vars <- c('permutMatTestGenus', 'permutMatVGenus');
+     lapply(vars, append.Rda, file = fileName);
+     rm(res);
+    
+
+     res <- generatePermutation(noTraitsFamily, traitIdsFamily, numFolds, testFlag);
+     permutMatTestFamily <- res[[1]];
+     permutMatVFamily <- res[[2]];
+     vars <- c('permutMatTestFamily', 'permutMatVFamily');
+     lapply(vars, append.Rda, file = fileName);
+     rm(res);
+     
+     
+     res <- generatePermutation(noTraitsGroup, traitIdsGroup, numFolds, testFlag);
+     permutMatTestGroup <- res[[1]];
+     permutMatVGroup <- res[[2]];
+     vars <- c('permutMatTestGroup', 'permutMatVGroup');
+     lapply(vars, append.Rda, file = fileName);
+     rm(res);
+     
+#%%%%%%%%%%%%%%%%%%%%%%%%
+#split datasets
+#%%%%%%%%%%%%%%%%%%%%%%%%
+
+    filename <- paste(inputDir, '/traits_species_atleastone_', datasetId, '.Rda', sep = "");
+    res <- splitData(permutMatTestSpec, permutMatVSpec, noTraitsSpec, zsLogXSpecies, zsLogXSpecies, traitNames, filename, '', 0, testFlag);
+
+    filename <- paste(inputDir, '/traits_genus_atleastone_',  datasetId, '.Rda', sep = "");
+    res <- splitData(permutMatTestGenus, permutMatVGenus, noTraitsGenus, zsLogXGenus, zsLogXGenus, traitNames, filename, '', 0, testFlag);
+
+    filename <- paste(inputDir, '/traits_family_atleastone_',  datasetId, '.Rda', sep = "");
+    res <- splitData(permutMatTestFamily, permutMatVFamily, noTraitsFamily, zsLogXFamily, zsLogXFamily, traitNames, filename, '', 0, testFlag);
+
+    filename <- paste(inputDir, '/traits_phylo_atleastone_', datasetId, '.Rda', sep = "");
+    res <- splitData(permutMatTestGroup, permutMatVGroup, noTraitsGroup, zsLogXGroup, zsLogXGroup, traitNames, filename, '', 0, testFlag);
+
+}

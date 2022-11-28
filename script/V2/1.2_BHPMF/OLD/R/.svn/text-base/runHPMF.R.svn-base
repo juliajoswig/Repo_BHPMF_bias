@@ -1,0 +1,180 @@
+rm(list = ls())
+source("utillity.R")
+dyn.load("../src/HPMF.so")
+
+
+datasetId = 2;
+
+tmp.env <- new.env()
+
+numSamples = 20;      #number of samples
+
+numTraits = 13;       #number of traits
+taxonomyLevels = 4;   #number of taxonomy levels
+opt = 2               #the optimization method (1: Stochastic Gradient Descent or 2: Gibbs Sampling)
+tunedLevel = 5;
+used_num_levels = 4;
+
+
+# read a file that contains required information
+#[hierachy_info, num_child] = adjust_hierarchy(hierarchy_info, num_child, num_nodes_per_level, new_num_hierarchy_levels) 
+#pass them into args 
+
+
+
+args <- list("numSamples" = as.integer(numSamples),
+	     "datasetId" = as.integer(datasetId),
+	     "numTraits" = as.integer(numTraits),
+	     "taxonomyLevels" = as.integer(taxonomyLevels),
+		 "tunedLevel" = as.integer(tunedLevel),
+		 "usedNumLevel" = as.integer(used_num_levels),
+	     "opt" = as.integer(opt),
+         "env" = tmp.env)
+#		 "numChildren" = num_childern,
+#		 "numParents" = num_parents,
+#		 "numNodesPerLevel" = num_nodes_per_level;
+#		 )
+
+out <- .Call("DemoHPMF", args);
+
+numPlants = out$numPlants; 
+
+#opt = out$opt;  #opt = 1 : Gradient Descent (HPMF), opt = 2: Gibbs sampling (BHPMF)
+
+#numSamples = out$out$numSamples;
+#cat("numSamples: ", numSamples, "\n")
+#datasetId = out$datasetId;
+#cat("datasetId: " , datasetId, "\n")
+if(opt == 1){
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#load the predictions and true test data
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#fileName = paste("../data/output/testPred_dataset", datasetId, "_opt", opt, ".txt", sep = "")
+#testPred <- as.matrix(read.table(fileName, sep = ","));
+
+#load the true test Data
+#fileName = paste("../data/fold", datasetId, "/zsLogYtest5.txt", sep = "")
+#testData <- as.matrix(read.table(fileName))
+#obsTest <- testData[,3];
+
+#testPred <- testPred[, 1:length(obsTest)];
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#find the RMSE of the Gibbs Sampler
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Res = testPred - obsTest;
+#testErr = sqrt(mean(Res^2));
+#cat("==========================================")
+#cat("Gradient Descent TEST RMSE: ", testErr, "\n")
+}
+
+if(opt == 2){
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#plot RMSE in different iterations
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+allRMSE = out$allRMSE;
+pdf(paste("../data/output/RMSperIteration", datasetId, ".pdf", sep = ""))
+plot(allRMSE, main="", xlab="Iteration", ylab="RMSE", type = "b")
+dev.off()
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Gap filling the whole data set
+#choose samples from it using a chosen burn, gap
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# inFileName = paste("../data/output/testPred_dataset", datasetId, "_opt", opt, ".txt", sep = "")
+# outFileName = "../data/output/gapFilled_opt2_new.txt";
+
+# burn = 4;
+# gap = 2;
+
+# args2 <- list("numSamples" = as.integer(numSamples),
+# 	     "numTraits" = as.integer(numTraits),
+# 	     "numPlants" = as.integer(numPlants),
+# 	     "gap" = as.integer(gap),
+# 	     "burn" = as.integer(burn))
+
+# out <- .Call("writeFilledGap", args2, inFileName, outFileName);
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#load the predictions
+#choose samples from it using a chosen burn, gap
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#load the true test Data
+fileName = paste("../data/fold", datasetId, "/zsLogYtest5.txt", sep = "")
+testData <- as.matrix(read.table(fileName))
+obsTest <- testData[,3];
+numTests <- nrow(testData);
+
+#load the prediction
+fileName = paste("../data/output/testPred_dataset", datasetId, "_opt", opt, "_new.bin", sep = "")
+#testPred <- as.matrix(read.table(fileName, sep = ","));
+num_entries = numTests * numSamples;
+con <- file(fileName, "rb")
+testPred <- matrix(readBin(con, double(), n = num_entries), nrow = numSamples, byrow = TRUE)
+
+burn = 2;
+gap = 2;
+
+testPred <- testPred[seq(burn, numSamples, by=gap), 1:length(obsTest)];
+
+
+# #%%%%%%%%%%%%%%%%%%%%%%%%%
+# #plot RMSE vs Std
+# #%%%%%%%%%%%%%%%%%%%%%%%%%
+# obsTest.rep = t(matrix(obsTest, length(obsTest), nrow(testPred)));
+
+# testRes = testPred - obsTest.rep;
+
+# testRes.sq = testRes^2;
+
+# testRMSE = sqrt(colMeans(testRes.sq));
+
+# testStd = apply(testPred, 2, sd);
+
+# sortRes = sort(testStd, index.return = TRUE)
+
+# sortedStd = sortRes$x;
+# sortedRMSE = testRMSE[sortRes$ix];
+
+
+# numObs = length(testStd);
+# numBatches = 10;
+
+# sizeBatch = floor(numObs / numBatches);
+
+# rmse = rep(0, numBatches);
+
+# for (batch in 1 : numBatches){
+
+#     beg = (batch-1)*sizeBatch+1;
+#     end = batch*sizeBatch;
+#     Idx = beg:end;
+    
+#     rmse[batch] = mean(sortedRMSE[Idx]);
+    
+# }
+
+# pdf(paste("../data/output/RMSEvsSTD", datasetId, ".pdf", sep = ""))
+
+# plot(rmse, main="", xlab="Percentage of Data with Ascending Std", ylab="Average RMSE",
+#   xlim=c(1, 10), xaxt="n", type = "b")
+
+# axis(1, at = seq(1, 10, by = 1), label = paste(1:10, "0%", sep=""), las=2)
+
+# dev.off()
+
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# #find the RMSE of the Gibbs Sampler
+# #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+avgTestPred = colMeans(testPred);
+avgRes = avgTestPred - obsTest;
+testErr = sqrt(mean(avgRes^2));
+cat("==========================================")
+cat("Gibbs Sampler TEST RMSE: ", testErr, "\n")
+
+}
