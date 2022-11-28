@@ -11,6 +11,7 @@
 # Content
 # 1. Create the data sets
 # 2. Set gaps (3 Repetitions)
+# 3. zlog transform 
 # 3. BHPMF impute
 # 4. Analyse & plot
 
@@ -44,8 +45,23 @@
 # 2. Set gaps (3 Repetitions)
 # ------------------------------------------------------------------------------
 # 2.1
-# run Repo_git/script/1.1_Preprocess/xxx.R
-# writes "data/MasterData/data/Obs_obs_TD/MasterData_inclPFT.csv"
-# writes "data/MasterData/data_2/Obs_obs_TD/MasterData_inclPFT.csv"
-# requires "xx"
-# loads "xxx"
+# run Repo_git/script/1.1_Preprocess/01_Set_Missingness/do_missingness.R
+# loads "data/MasterData/data/Obs_obs_TD/MasterData_inclPFT.csv"
+# loads "data/MasterData/data/Obs_obs/MasterData_inclPFT.csv"
+# loads "data/MasterData/data_2/Obs_obs_TD/MasterData_inclPFT.csv"
+# loads "data/MasterData/data_2/Obs_obs/MasterData_inclPFT.csv"
+
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/traitInfo.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/taxInfo.csv"
+# writes "data/_runs/Rep_<RepNum>/data[or data_2]*/p_<0-80>**/Obs_obs[or Obs_obs_TD]***/data/funInfo.csv"  
+# * "data" and "data_2" refers to TD and TD2
+# ** missingness levels from 0 to 80%
+# *** Obs_obs refers to the ExTD (ExTD2) and Obs_obs_TD refers to TD (TD2)
+
+
+"traitInfo_log.csv"
+
+# ------------------------------------------------------------------------------
+# 3. BHPMF impute
+# ------------------------------------------------------------------------------
+

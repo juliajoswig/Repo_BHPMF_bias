@@ -9,7 +9,7 @@ if(!is.it.on.cluster){
   origin = "Volumes/bgi-1/work_1/2016_GapFilling"
   origin = "Volumes/bgi/work_1/2016_GapFilling"
 }
-Version_now="V1"
+
 gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
 t_choices=c("data","data_2")
 TDnos=c("Obs_obs_TD","Obs_obs")

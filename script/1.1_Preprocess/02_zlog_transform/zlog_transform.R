@@ -1,3 +1,6 @@
+# Julia Joswig
+# central piece of script, saves the mean and sd for scaling, and later back-transformation
+
 is.it.on.cluster=FALSE
 is.it.on.cluster=TRUE
 if(is.it.on.cluster){
@@ -9,7 +12,8 @@ if(!is.it.on.cluster){
   origin = "Volumes/bgi-1/work_1/2016_GapFilling"
   origin = "Volumes/bgi/work_1/2016_GapFilling"
 }
-Version_now="V1"
+
+
 gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
 t_choices=c("data","data_2")
 TDnos=c("Obs_obs_TD","Obs_obs")
@@ -18,7 +22,8 @@ trait_rainfor =  c("SLA","PlantHeight","SSD","LeafN","LeafP","LeafNArea")
 trait_guido =  c("SLA","PlantHeight","SeedMass","LDMC","LeafArea")#c("SLA","PlantHeight","SSD","LeafN","LeafP","LeafNArea")
 
 MasterData <- as.data.frame(read.csv(file=file.path(origin,"_2021","data","MasterData","data","Obs_obs","MasterData_inclPFT.csv")))
-  colnames(MasterData[,25:ncol(MasterData)])
+  
+colnames(MasterData[,25:ncol(MasterData)])
   summary(MasterData[,25:ncol(MasterData)])
   hist(MasterData[,colnames(MasterData)%in%"Leafdelta15N"])
   MasterData_log <- cbind(log(MasterData[,c(25:39)]),
@@ -29,6 +34,7 @@ MasterData <- as.data.frame(read.csv(file=file.path(origin,"_2021","data","Maste
   MasterData_mean <- apply(MasterData_log,2,mean,na.rm=TRUE)
   MasterData_sd <- apply(MasterData_log,2,sd,na.rm=TRUE)
   MeanAndSd <- rbind(MasterData_mean,MasterData_sd)
+  
   save(MeanAndSd,file=file.path(origin,"_2021","data","helper_data","scaling","factors.Rdata"))
   
 
