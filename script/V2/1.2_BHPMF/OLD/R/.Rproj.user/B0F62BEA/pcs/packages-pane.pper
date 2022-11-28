@@ -1,7 +1,0 @@
-{
-    "installOptions" : {
-        "installDependencies" : true,
-        "installFromRepository" : true,
-        "libraryPath" : "C:/Profiles/gkraemer/Documents/R/R-3.2.2/library"
-    }
-}
