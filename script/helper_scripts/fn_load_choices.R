@@ -1,4 +1,4 @@
-choices <- function(){
+choices <- function(originData){
   
   out <- list()
   out$repnums = 1:30
@@ -17,15 +17,15 @@ choices <- function(){
   out$colz1<- c("#f7fbff","#deebf7","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#084594")
   
   # Load functional data  
-  list.files(file.path(origin,"_2021","data","helper_data","functional_information"))
-  GF <- read.table(file.path(origin,"_2021","data","helper_data","functional_information","GF_Obs.csv"),sep=",",dec=".")
-  PFT <- read.table(file.path(origin,"_2021","data","helper_data","functional_information","PFT_Obs.csv"),sep=",",dec=".")
+  list.files(file.path(originData,"helper_data","functional_information"))
+  GF <- read.table(file.path(originData ,"helper_data","functional_information","GF_Obs.csv"),sep=",",dec=".")
+  PFT <- read.table(file.path(originData ,"helper_data","functional_information","PFT_Obs.csv"),sep=",",dec=".")
 
   #------------------------------
   #------------------------------
 
-  out$data <- read.csv(file.path(origin,"_2021","data","helper_data","ObservationIDs","data","traitInfo.csv"))[,-1]
-  out$data_2 <- read.csv(file.path(origin,"_2021","data","helper_data","ObservationIDs","data_2","traitInfo.csv"))[,-1]
+  out$data <- read.csv(file.path(originData ,"helper_data","ObservationIDs","data","traitInfo.csv"))[,-1]
+  out$data_2 <- read.csv(file.path(originData ,"helper_data","ObservationIDs","data_2","traitInfo.csv"))[,-1]
   
   out$new.mean.fun <- function(x){return(mean(x,na.rm = TRUE))}
   out$new.sd.fun <- function(x){return(sd(x,na.rm = TRUE))}
