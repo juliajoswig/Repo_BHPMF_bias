@@ -1,34 +1,27 @@
 
-# 20210824
-# Reorganize the outputs harmonize.
-# create harmonic output:
-# Un-transformed!
-
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=TRUE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
+
+#------------------------------------------------------------
+# define data set approaches/choices
+#------------------------------------------------------------
+out <- choices(originData)
   tsubs <- out$tsubs
   ObsOrTDs = out$ObsOrTDs
   repnums = out$repnums
@@ -44,8 +37,7 @@ out <- choices()
   new.mean.fun = out$new.mean.fun
   new.sd.fun = out$new.sd.fun
   
-  Percent=0
-  RepNum=3
+  Percent=1
   t_choice="data"
   ObsOrTD="Obs_obs"
   gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
@@ -53,9 +45,11 @@ out <- choices()
   
   t_choices=c("data","data_2")
   TDnos=c("Obs_obs_TD","Obs_obs")
-  repnums=3
+  repnums=2
   TDno=2
-  p=1
+  p=7
+  td=1
+  RepNum=1
   
   for(RepNum in 1){
     for(td in 1:2){
@@ -72,21 +66,21 @@ out <- choices()
       #-------------------------------------------------------------------
       # load trait data   
       #-------------------------------------------------------------------
-      taxInfo <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","taxInfo.csv"), sep=",")
+      taxInfo <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","taxInfo.csv"), sep=",")
       colnames(taxInfo) <- c("ObservationID","Species","Genus","Family","Clade")
       head(taxInfo)
-      traitInfo_obs <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo.csv"), sep=",", dec=".",header = TRUE)[,-1]
+      traitInfo_obs <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo.csv"), sep=",", dec=".",header = TRUE)[,-1]
       head(traitInfo_obs)  
-      traitInfo_obs_zlog <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_zlog.csv"), sep=",", dec=".",header = TRUE)[,-1]
+      traitInfo_obs_zlog <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_zlog.csv"), sep=",", dec=".",header = TRUE)[,-1]
       head(traitInfo_obs)
       traitInfo_obs_zlog <- cbind(traitInfo_obs[,1],traitInfo_obs_zlog);colnames(traitInfo_obs_zlog)[1] <- "ObservationID"
       head(traitInfo_obs_zlog)  
-      load(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","zlog_transform.RData"))
+      load(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","zlog_transform.RData"))
       
   # load the output for trait predictions: mean.csv
-      pred_path=file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","mean.csv")
+      pred_path=file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","mean.csv")
       if(Percent!=0|file.exists(pred_path)){
-        traitInfo_pred_zlog <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","mean.csv"), sep="\t", dec=".",header=TRUE)
+        traitInfo_pred_zlog <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","mean.csv"), sep="\t", dec=".",header=TRUE)
         traitInfo_pred_zlog <- cbind(traitInfo_obs[,1],traitInfo_pred_zlog);colnames(traitInfo_pred_zlog)[1] <- "ObservationID"
         head(traitInfo_pred_zlog)
         traitInfo_pred_log <- (traitInfo_pred_zlog[,-1]*zlog_trans$sdM)+zlog_trans$meanM
@@ -105,9 +99,9 @@ out <- choices()
     #-------------------------------------------------------------------
         print("save pred zlog")
       write.csv(traitInfo_pred,file = 
-                  file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred.csv"))
+                  file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred.csv"))
       write.csv(traitInfo_pred_zlog,file = 
-                  file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred_zlog.csv"))
+                  file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred_zlog.csv"))
       }
       
   #-------------------------------------------------------------------
@@ -119,7 +113,7 @@ out <- choices()
       # save TD version of mean and sd for Envelope TD
       zlog_trans$meanM <- zlog_trans$meanM[1:length(obsIDs),which(colnames(traitInfo_obs_zlog)[2:ncol(traitInfo_obs_zlog)]%in%trait_now)]
       zlog_trans$sdM <- zlog_trans$sdM[1:length(obsIDs),which(colnames(traitInfo_obs_zlog)[2:ncol(traitInfo_obs_zlog)]%in%trait_now)]
-      save(zlog_trans,file=file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","TDzlog_transform.RData"))
+      save(zlog_trans,file=file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","TDzlog_transform.RData"))
       
       traitInfoTD_obs      <- traitInfo_obs[as.numeric(taxInfo[,1])%in%as.numeric(obsIDs),c(1,which(colnames(traitInfo_obs)%in%trait_now))] 
       traitInfoTD_obs_zlog <- traitInfo_obs_zlog[as.numeric(taxInfo[,1])%in%as.numeric(obsIDs),c(1,which(colnames(traitInfo_obs_zlog)%in%trait_now))] 
@@ -128,7 +122,7 @@ out <- choices()
       traitInfoTD_pred_zlog <- traitInfo_pred_zlog[as.numeric(taxInfo[,1])%in%as.numeric(obsIDs),c(1,which(colnames(traitInfo_pred_zlog)%in%trait_now))] 
   }  
       # Re zlog to TD mean and sd
-      load(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),"Obs_obs_TD","data","zlog_transform.RData"))
+      load(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),"Obs_obs_TD","data","zlog_transform.RData"))
       traitInfoTD_obs_REzlog <- cbind(traitInfoTD_obs[,1],(log(traitInfoTD_obs[,-1])-zlog_trans$meanM)/zlog_trans$sdM)
       if(Percent!=0|file.exists(pred_path)){ 
         traitInfoTD_pred_REzlog <- cbind(traitInfoTD_pred[,1],(log(traitInfoTD_pred[,-1])-zlog_trans$meanM)/zlog_trans$sdM)}
@@ -137,15 +131,16 @@ out <- choices()
     # save pred in both transformations
     #-------------------------------------------------------------------
     
-      write.csv(traitInfoTD_obs_REzlog,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_REzlog.csv"))
+      write.csv(traitInfoTD_obs_REzlog,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_REzlog.csv"))
       if(Percent!=0|file.exists(pred_path)){ 
-        write.csv(traitInfoTD_pred_REzlog,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv"))}
+        write.csv(traitInfoTD_pred_REzlog,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv"))
+        }
       
-      write.csv(traitInfoTD_obs,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv"))
-      write.csv(traitInfoTD_obs_zlog,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_zlog.csv"))
+      write.csv(traitInfoTD_obs,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv"))
+      write.csv(traitInfoTD_obs_zlog,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_zlog.csv"))
       if(Percent!=0|file.exists(pred_path)){
-      write.csv(traitInfoTD_pred_zlog,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_zlog.csv"))
-      write.csv(traitInfoTD_pred,file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv"))
+      write.csv(traitInfoTD_pred_zlog,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_zlog.csv"))
+      write.csv(traitInfoTD_pred,file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv"))
     }
   
       print(paste(RepNum,ObsOrTD,t_choice,Percent," done :)"))

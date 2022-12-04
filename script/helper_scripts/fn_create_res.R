@@ -1,5 +1,5 @@
 create_res <- function(res_matrix_name, tsubs,TD_choices,repnums = out$repnums,gappercents,
-                       whichDataSet,ObsSpec){
+                       whichDataSet,ObsSpec,originData){
   
   res <- matrix(NA,ncol=4,nrow=10000)
   colnames(res)[1:4] = c("Repetition","Obs_or_Spec","TraitChoice","GapPercent")        
@@ -26,5 +26,5 @@ create_res <- function(res_matrix_name, tsubs,TD_choices,repnums = out$repnums,g
   res <- as.matrix(res[!is.na(res[,4]),])
   dim(res)
   head(res)
-  write.table(res,file=file.path(origin,"_2021","data","analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
+  write.table(res,file=file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
 }

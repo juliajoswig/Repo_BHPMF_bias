@@ -1,31 +1,27 @@
+
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"script","analysis",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin = origin,Version_now = Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
+
+#------------------------------------------------------------
+# define data set approaches/choices
+#------------------------------------------------------------
+out <- choices(originData)
     tsubs <- out$tsubs
     ObsOrTDs =  out$ObsOrTDs
     repnums = out$repnums
@@ -59,16 +55,18 @@ repnums=3
 #-------------------------------------------------------------------
 
 GapPercent=50
-RepNum=1
 t_choice="data"
 ObsOrTD="Obs_obs_TD"
 gappercents=c(1,5,10,20,30,40,50,60,70,80)
 t_choices=c("data","data_2")
 TDnos=c("Obs_obs_TD","Obs_obs")
 repnums=3
-td=1
-p=10
+RepNum=3
+td=2
+p=9
 TDno=2
+gappercents=80
+
 
 for(RepNum in 1:3){
   for(td in 1:2){
@@ -83,18 +81,18 @@ for(RepNum in 1:3){
         print(paste(RepNum,ObsOrTD,t_choice,Percent))
         
         # define dat path
-        list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
-        list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+        list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
+        list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
         
-        path_obs0 <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
-        path_obs <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
-        path_pred <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv")
+        path_obs0 <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
+        path_obs <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
+        path_pred <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv")
         
-        path_obs0_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_zlog.csv")
-        path_pred_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred_zlog.csv")
+        path_obs0_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_zlog.csv")
+        path_pred_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfo_pred_zlog.csv")
         if(ObsOrTD=="Obs_obs"){
-          path_obs0_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
-          path_pred_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
+          path_obs0_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
+          path_pred_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
         }
 
         if(file.exists(path_pred)&file.exists(path_pred_zlog)&
@@ -143,20 +141,20 @@ for(RepNum in 1:3){
           # create folder and save
           # -------------------------------------------------
           
-          if(!file.exists(file.path(origin,"_2021","data","analyses"))){
-            dir.create(file.path(origin,"_2021","data","analyses"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","RMSE"))){
-            dir.create(file.path(origin,"_2021","data","analyses","RMSE"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","RMSE",t_choice))){
-            dir.create(file.path(origin,"_2021","data","analyses","RMSE",t_choice))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD))){
-            dir.create(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD,Percent))){
-            dir.create(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD,Percent))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum))){
-            dir.create(file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum))}
+          if(!file.exists(file.path(originData,"analyses"))){
+            dir.create(file.path(originData,"analyses"))}
+          if(!file.exists(file.path(originData,"analyses","RMSE"))){
+            dir.create(file.path(originData,"analyses","RMSE"))}
+          if(!file.exists(file.path(originData,"analyses","RMSE",t_choice))){
+            dir.create(file.path(originData,"analyses","RMSE",t_choice))}
+          if(!file.exists(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD))){
+            dir.create(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD))}
+          if(!file.exists(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD,Percent))){
+            dir.create(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD,Percent))}
+          if(!file.exists(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum))){
+            dir.create(file.path(originData,"analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum))}
           
-          write.table(rmse_m, file = file.path(origin,"_2021","data","analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum,paste0("RMSE.csv")),
+          write.table(rmse_m, file = file.path(originData,"analyses","RMSE",t_choice,ObsOrTD,Percent,RepNum,paste0("RMSE.csv")),
                       sep = ",",row.names = TRUE,col.names = TRUE)
 
         }

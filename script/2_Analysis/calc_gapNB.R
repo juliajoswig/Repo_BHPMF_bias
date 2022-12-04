@@ -1,40 +1,34 @@
+
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V2"
-list.files(file.path(origin,"script","analysis",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin = origin,Version_now = Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
-tsubs <- out$tsubs
-ObsOrTDs =  out$ObsOrTDs
-repnums = out$repnums
-gappercents = out$gappercents
-whichDataSet = out$whichDataSet
-ObsSpec = out$ObsSpec
-obsspec = ObsSpec
-preparation = out$preparation
-trait_guido =out$trait_guido
-trait_rainfor =out$trait_rainfor
-colz1 = out$colz1
-colz2 = out$colz2
+out <- choices(originData)
+  tsubs <- out$tsubs
+  ObsOrTDs =  out$ObsOrTDs
+  repnums = out$repnums
+  gappercents = out$gappercents
+  whichDataSet = out$whichDataSet
+  ObsSpec = out$ObsSpec
+  obsspec = ObsSpec
+  preparation = out$preparation
+  trait_guido =out$trait_guido
+  trait_rainfor =out$trait_rainfor
+  colz1 = out$colz1
+  colz2 = out$colz2
 gappercents= c("1","5","10","20","30","40","50","60")
 repnums=1:3
 rmse_fun <- function(x,y){
@@ -52,7 +46,7 @@ t_choices=c("data","data_2")
 TDnos=c("Obs_obs_TD","Obs_obs")
 repnums=3
 #-------------------------------------------------------------------
-# Loop through all runs and calculate the indices
+# Loop through all runs and calculate the missing entries
 #-------------------------------------------------------------------
 
 GapPercent=50
@@ -79,10 +73,10 @@ for(RepNum in 1:3){
         print(paste(RepNum,ObsOrTD,t_choice,Percent))
         
         # define dat path
-        list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
-        list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+        list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
+        list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
         
-        path_obs <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
+        path_obs <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
 
         if(file.exists(path_obs)){
           
@@ -103,20 +97,20 @@ for(RepNum in 1:3){
           # create folder
           # -------------------------------------------------
           
-          if(!file.exists(file.path(origin,"_2021","data","analyses"))){
-            dir.create(file.path(origin,"_2021","data","analyses"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","GapNb"))){
-            dir.create(file.path(origin,"_2021","data","analyses","GapNb"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","GapNb",t_choice))){
-            dir.create(file.path(origin,"_2021","data","analyses","GapNb",t_choice))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD))){
-            dir.create(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD,Percent))){
-            dir.create(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD,Percent))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum))){
-            dir.create(file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum))}
+          if(!file.exists(file.path(originData,"analyses"))){
+            dir.create(file.path(originData,"analyses"))}
+          if(!file.exists(file.path(originData,"analyses","GapNb"))){
+            dir.create(file.path(originData,"analyses","GapNb"))}
+          if(!file.exists(file.path(originData,"analyses","GapNb",t_choice))){
+            dir.create(file.path(originData,"analyses","GapNb",t_choice))}
+          if(!file.exists(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD))){
+            dir.create(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD))}
+          if(!file.exists(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD,Percent))){
+            dir.create(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD,Percent))}
+          if(!file.exists(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum))){
+            dir.create(file.path(originData,"analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum))}
           
-          write.table(GapNb, file = file.path(origin,"_2021","data","analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum,paste0("GapNb.csv")),
+          write.table(GapNb, file = file.path(originData,"analyses","GapNb",t_choice,ObsOrTD,Percent,RepNum,paste0("GapNb.csv")),
                       sep = ",",row.names = TRUE,col.names = TRUE)
           
         }

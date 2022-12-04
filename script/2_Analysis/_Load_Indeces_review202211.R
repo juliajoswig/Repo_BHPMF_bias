@@ -2,31 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
     t_choices <- out$tsubs
     TDnos = out$TD_choices
     repnums = out$repnums
@@ -49,13 +39,15 @@ out <- choices()
 #------------------------------------------------------------
 # create results list
 #------------------------------------------------------------
-    res_matrix_name="res_20211114"#"res_20201112"
-    #res_matrix_name="res_20210303"#"res_20201112"
-    #create_res(res_matrix_name = res_matrix_name,tsubs = t_choices,TD_choices = TDnos,repnums = 1:3,gappercents = gappercents,whichDataSet =whichDataSet,ObsSpec =  1:2)
+    #res_matrix_name="res_20211114"#"res_20201112"
+    res_matrix_name="res_20221203"#"res_20201112"
+    create_res(res_matrix_name = res_matrix_name,tsubs = t_choices,
+               TD_choices = TDnos,repnums = 1:3,gappercents = gappercents,
+               whichDataSet =whichDataSet,ObsSpec =  1:2,originData=originData)
 #-------------------------------------------------------------------
 # Loop through all runs and load the indices
 #-----------------------------------------------------------------
-  res <- read.table(file.path(origin,"_2021","data","analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
+  res <- read.table(file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
   RepNum=1
   GapPercent=5
   ts=1
@@ -76,6 +68,7 @@ out <- choices()
   td=1
   tc=1
   p=3
+  gappercents=80
   
   for(RepNum in 1:3){
     for(tc in 1:2){
@@ -98,7 +91,7 @@ out <- choices()
                       res[,2]== ObsOrTD & 
                       res[,3]== t_choice & 
                       as.numeric(res[,4])== Percent)
-        I=4
+        I=1
         for(I in 1:length(Indeces)){
        
         Index_now = Indeces[I]
@@ -108,7 +101,7 @@ out <- choices()
         #--------------------------------------------------------------
         # PCA
         if(Index_now == "PCA"){
-          pca_path = file.path(origin,"_2021","data","analyses","PCA",t_choice,ObsOrTD,Percent,RepNum,paste0("PCA.csv"))
+          pca_path = file.path(originData,"analyses","PCA",t_choice,ObsOrTD,Percent,RepNum,paste0("PCA.csv"))
           res <- add_col_to_res("PCA1",res)
           res <- add_col_to_res("PCA2",res)
           res <- add_col_to_res("PCA3",res)
@@ -128,7 +121,7 @@ out <- choices()
         if(Index_now=="Sil"){
             print("Silhouette Index")
             if(Percent==-1){Percent1="org"}else{Percent1=Percent}
-            sil_path=file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum,"Silhouette.RData")
+            sil_path=file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum,"Silhouette.RData")
             if(file.exists(sil_path)){
               load(sil_path)
 
@@ -188,22 +181,22 @@ out <- choices()
       if(Index_now == "RMSE"){
         print("RMSE")            
 
-        path_rmse <-  file.path(origin,"_2021","data","analyses",
+        path_rmse <-  file.path(originData,"analyses",
                                       "RMSE",t_choice,ObsOrTD,Percent,RepNum,"RMSE.csv")
         
         if(file.exists(path_rmse)){
-          all_out <- read.csv(file.path(origin,"_2021","data","analyses",
+          all_out <- read.csv(file.path(originData,"analyses",
                              "RMSE",t_choice,ObsOrTD,Percent,RepNum,"RMSE.csv"),header = TRUE,row.names = NULL)
           
           print(ObsOrTD)
           print(all_out)
           
-#          for(i in 1:ncol(all_out)){
-#            res <- add_col_to_res(paste0("RMSE_",colnames(all_out)[i]),res)
-#            res <- add_col_to_res(paste0("RMSE_gap_",colnames(all_out)[i]),res)
-#            res <- add_col_to_res(paste0("RMSE_zlog_",colnames(all_out)[i]),res)
-#            res <- add_col_to_res(paste0("RMSE_gap_zlog_",colnames(all_out)[i]),res)
-#          }
+          for(i in 1:ncol(all_out)){
+            res <- add_col_to_res(paste0("RMSE_",colnames(all_out)[i]),res)
+            res <- add_col_to_res(paste0("RMSE_gap_",colnames(all_out)[i]),res)
+            res <- add_col_to_res(paste0("RMSE_zlog_",colnames(all_out)[i]),res)
+            res <- add_col_to_res(paste0("RMSE_gap_zlog_",colnames(all_out)[i]),res)
+          }
         
         # add entries
             whichcol = which(colnames(res)==paste0("RMSE_Total"))
@@ -218,25 +211,25 @@ out <- choices()
             
             # insert in correct line
 #            i=2
-#            for(i in 2:ncol(all_out)){
-#              whichcol = which(colnames(res)==paste0("RMSE_",colnames(all_out)[i]))
-#              res[n,whichcol] <-  all_out[which(all_out[,1]=="no_trans"),which(colnames(all_out)==colnames(all_out)[i])]
-#              whichcol = which(colnames(res)==paste0("RMSE_gap_",colnames(all_out)[i]))
-#              res[n,whichcol] <-  all_out[which(all_out[,1]=="no_transNA"),which(colnames(all_out)==colnames(all_out)[i])]
-#              
-#              whichcol = which(colnames(res)==paste0("RMSE_zlog_",colnames(all_out)[i]))
-#              res[n,whichcol] <-  all_out[which(all_out[,1]=="zlog"),which(colnames(all_out)==colnames(all_out)[i])]
-#              whichcol = which(colnames(res)==paste0("RMSE_gap_zlog_",colnames(all_out)[i]))
-#              res[n,whichcol] <-  all_out[which(all_out[,1]=="zlogNA"),which(colnames(all_out)==colnames(all_out)[i])]
-#              }
+            for(i in 2:ncol(all_out)){
+              whichcol = which(colnames(res)==paste0("RMSE_",colnames(all_out)[i]))
+              res[n,whichcol] <-  all_out[which(all_out[,1]=="no_trans"),which(colnames(all_out)==colnames(all_out)[i])]
+              whichcol = which(colnames(res)==paste0("RMSE_gap_",colnames(all_out)[i]))
+              res[n,whichcol] <-  all_out[which(all_out[,1]=="no_transNA"),which(colnames(all_out)==colnames(all_out)[i])]
+              
+              whichcol = which(colnames(res)==paste0("RMSE_zlog_",colnames(all_out)[i]))
+              res[n,whichcol] <-  all_out[which(all_out[,1]=="zlog"),which(colnames(all_out)==colnames(all_out)[i])]
+              whichcol = which(colnames(res)==paste0("RMSE_gap_zlog_",colnames(all_out)[i]))
+              res[n,whichcol] <-  all_out[which(all_out[,1]=="zlogNA"),which(colnames(all_out)==colnames(all_out)[i])]
+              }
             }
         } 
 
       
         # Corr
       if(Index_now == "Corr"){
-        cor_path=       file.path(origin,"_2021","data","analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl.csv"))
-        cor_zlog_path = file.path(origin,"_2021","data","analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl_zlog.csv"))
+        cor_path=       file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl.csv"))
+        cor_zlog_path = file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl_zlog.csv"))
         
         if(file.exists(cor_path)){
             cor_dat <- read.csv(cor_path)
@@ -281,6 +274,6 @@ out <- choices()
   
   res=as.data.frame(res)
 
-  write.table(res,file=file.path(origin,"_2021","data","analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
+  write.table(res,file=file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")),sep=",",dec=".")
   
   

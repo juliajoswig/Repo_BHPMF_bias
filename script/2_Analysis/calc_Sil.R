@@ -2,28 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
   t_choices <- out$tsubs
   TDnos = out$TD_choices
   repnums = out$repnums
@@ -64,27 +57,27 @@ repnums=3
 td=1
 p=3
 
-for(RepNum in 2:3){
-  for(td in 1){
+for(RepNum in 1:3){
+  for(td in 1:2){
     t_choice <- t_choices[td]
     
     for(p in 1:length(gappercents)){
       Percent = gappercents[p] 
       
-      for(TDno in 2){
+      for(TDno in 1:2){
         ObsOrTD <- TDnos[TDno]
         
         print(paste(RepNum,ObsOrTD,t_choice,Percent))
         
         # define dat path
-        list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
+        list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
         
-        path_obs0_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
-        #path_obs0_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
-        path_obs0 <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
-        path_obs <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
-        path_pred_zlog <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
-        path_pred <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv")
+        path_obs0_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
+        #path_obs0_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
+        path_obs0 <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
+        path_obs <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_obs.csv")
+        path_pred_zlog <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
+        path_pred <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data","traitInfoTD_pred.csv")
         
 
         if(file.exists(path_pred)&file.exists(path_pred_zlog)&
@@ -100,18 +93,18 @@ for(RepNum in 2:3){
         if(sum(!is.na(traitInfo_pred_zlog))>0){# remove, once all runs are correct
           
           # taxonomy 
-          tmp <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+          tmp <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                   ObsOrTD,"data","traitInfoTD_obs.csv"),header=TRUE))[,-1]
-          taxInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+          taxInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                         ObsOrTD,"data","taxInfo.csv"),header=FALSE)
           colnames(taxInfo) <- c("ObservationID","Species","Genus","Family","Clades")
           taxInfo <- taxInfo[which(taxInfo$ObservationID%in%tmp$ObservationID),]
           
-          funInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+          funInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                         ObsOrTD,"data","funInfo.csv"),header=TRUE)[,-1]
           funInfo <- funInfo[which(funInfo$ObservationID%in%tmp$ObservationID),]
           taxInfo <- cbind(taxInfo,funInfo[,-1])
-          write.csv(taxInfo,file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+          write.csv(taxInfo,file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                       ObsOrTD,"data","taxInfoTD.csv"))
           dim(taxInfo)
           rm("tmp")
@@ -139,20 +132,20 @@ for(RepNum in 2:3){
           # create folder
           # -------------------------------------------------
           
-          if(!file.exists(file.path(origin,"_2021","data","analyses"))){
-            dir.create(file.path(origin,"_2021","data","analyses"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","Silhouette"))){
-            dir.create(file.path(origin,"_2021","data","analyses","Silhouette"))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","Silhouette",t_choice))){
-            dir.create(file.path(origin,"_2021","data","analyses","Silhouette",t_choice))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD))){
-            dir.create(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent))){
-            dir.create(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent))}
-          if(!file.exists(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum))){
-            dir.create(file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum))}
+          if(!file.exists(file.path(originData,"analyses"))){
+            dir.create(file.path(originData,"analyses"))}
+          if(!file.exists(file.path(originData,"analyses","Silhouette"))){
+            dir.create(file.path(originData,"analyses","Silhouette"))}
+          if(!file.exists(file.path(originData,"analyses","Silhouette",t_choice))){
+            dir.create(file.path(originData,"analyses","Silhouette",t_choice))}
+          if(!file.exists(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD))){
+            dir.create(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD))}
+          if(!file.exists(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent))){
+            dir.create(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent))}
+          if(!file.exists(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum))){
+            dir.create(file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum))}
           
-          save(sil_l,file=file.path(origin,"_2021","data","analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum,"Silhouette.RData"))
+          save(sil_l,file=file.path(originData,"analyses","Silhouette",t_choice,ObsOrTD,Percent,RepNum,"Silhouette.RData"))
 
         }else{print("redo run ! Something went wrong")}# remove, once all runs are correct
           }else{

@@ -2,31 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
   t_choices <- out$tsubs
   TDnos = out$TD_choices
   repnums = out$repnums
@@ -61,7 +51,7 @@ out <- choices()
 #-------------------------------------------------------------------
 # load trait data   
 #-------------------------------------------------------------------
-file.path(origin,"_2021","data","analyes","Point_wise","res.csv")
+file.path(originData,"analyes","Point_wise","res.csv")
   if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
   if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","mm2")}
   
@@ -71,27 +61,27 @@ colz=colz1
   # load Envelope data
   # load TDenvelope
   ObsOrTD="Obs_obs_TD"
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
 
   # load TD data
   # total trait data 
-  TD <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                              "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
   head(TD)
   # load Envelope data
   # total trait data 
-  EnvTot <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  EnvTot <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                           "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
   summary(EnvTot)
   Env <- EnvTot[,colnames(EnvTot)%in%colnames(TD)]
   head(Env)
   
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
   # predicted 
-  TDtd <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDtd <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
-  TDenv <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                        "Obs_obs_TD","data","traitInfoTD_pred.csv")))[,-c(1,2)]
   head(TDtd)
   head(TDenv)
@@ -104,16 +94,16 @@ colz=colz1
 {
   # load Envelope data
   # load TDenvelope
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD","data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD"))
   # load TD data
   # total trait data 
-  TD <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                          "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  TD_sparse <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                                 "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  taxTD <- as.data.frame(read.table(file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  taxTD <- as.data.frame(read.table(file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                      "Obs_obs_TD","data","taxInfo.csv"),
                                     sep=",",col.names = c("ID","Species","Genus","Family","Clade")))
   ID_TD <- taxTD[,1]
@@ -123,13 +113,13 @@ colz=colz1
   dim(TD_sparse)
   # load Envelope data
   # total trait data 
-  EnvTot <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
+  EnvTot <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
                                              "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  Envsparse <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  Envsparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                                 "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  taxEnv <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  taxEnv <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                              "Obs_obs","data","taxInfo.csv"),header=TRUE))
-  taxEnv <- as.data.frame(read.table(file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  taxEnv <- as.data.frame(read.table(file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                                       "Obs_obs","data","taxInfo.csv"),
                                      sep=",",col.names = c("ID","Species","Genus","Family","Clade")))
   ID_env <- taxEnv[,1]
@@ -137,11 +127,11 @@ colz=colz1
   summary(EnvTot)
   Env <- EnvTot[,colnames(EnvTot)%in%colnames(TD)]
   Env_sp <- Envsparse[,colnames(Envsparse)%in%colnames(TD)]
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
   # predicted 
-  TDtd <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDtd <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
-  TDenv <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                         "Obs_obs_TD","data","traitInfoTD_pred.csv")))[,-c(1,2)]
   head(TDtd)
   head(TDenv)
@@ -164,15 +154,10 @@ setwd(origin)
 
 defense_prep=FALSE
 par(mfrow=c(1,1),mar=c(5,6,1,1))
-#if(t_choice=="data"){pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_2_Density.pdf"),width=18,height=4)}
-#if(t_choice=="data_2"){pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_S2_Density.pdf"),width=18,height=4)}
-#if(t_choice=="data"&defense_prep==TRUE){pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_2_Density_only2.pdf"),width=18,height=4)}
-#if(t_choice=="data_2"&defense_prep==TRUE){pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_S2_Density_only2.pdf"),width=18,height=4)}
-
-if(t_choice=="data"){pdf(file=file.path("_2021","figures","Figure_2","Fig_2_Density_r.pdf"),width=18,height=4)}
-if(t_choice=="data_2"){pdf(file=file.path("_2021","figures","Figure_2","Fig_S2_Density_r.pdf"),width=18,height=4)}
-if(t_choice=="data"&defense_prep==TRUE){pdf(file=file.path("_2021","figures","Figure_2","Fig_2_Density_only2_r.pdf"),width=18,height=4)}
-if(t_choice=="data_2"&defense_prep==TRUE){pdf(file=file.path("_2021","figures","Figure_2","Fig_S2_Density_only2_r.pdf"),width=18,height=4)}
+if(t_choice=="data"){pdf(file=file.path("figures","Figure_2","Fig_2_Density_r.pdf"),width=18,height=4)}
+if(t_choice=="data_2"){pdf(file=file.path("figures","Figure_2","Fig_S2_Density_r.pdf"),width=18,height=4)}
+if(t_choice=="data"&defense_prep==TRUE){pdf(file=file.path("figures","Figure_2","Fig_2_Density_only2_r.pdf"),width=18,height=4)}
+if(t_choice=="data_2"&defense_prep==TRUE){pdf(file=file.path("figures","Figure_2","Fig_S2_Density_only2_r.pdf"),width=18,height=4)}
 
 {
   if(t_choice=="data"){

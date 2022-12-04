@@ -2,31 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
   t_choices <- out$tsubs
   TDnos = out$TD_choices
   repnums = out$repnums
@@ -51,17 +41,15 @@ out <- choices()
   # chose trait data   
   #-------------------------------------------------------------------
   repnums=3
-  t_choice="data_2"
+  t_choice="data"
   GapPercent=80
-  if(t_choice=="data"){RepNum=1}
-  if(t_choice=="data_2"){RepNum=2}
-  
+  RepNum=1
   
   
 #-------------------------------------------------------------------
 # load trait data   
 #-------------------------------------------------------------------
-file.path(origin,"_2021","data","analyes","Point_wise","res.csv")
+file.path(originData,"analyes","Point_wise","res.csv")
 if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","")}
 if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
 if(t_choice=="data"){trait_names=trait_rainfor}
@@ -73,16 +61,16 @@ colz=colz1[c(1,5,2,3,4)]
 {
   # load Envelope data
   # load TDenvelope
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD","data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD"))
   # load TD data
   # total trait data 
-  TD <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                          "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  TD_sparse <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                          "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  taxTD <- as.data.frame(read.table(file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  taxTD <- as.data.frame(read.table(file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                          "Obs_obs_TD","data","taxInfo.csv"),
                                     sep=",",col.names = c("ID","Species","Genus","Family","Clade")))
   ID_TD <- taxTD[,1]
@@ -92,13 +80,13 @@ colz=colz1[c(1,5,2,3,4)]
   dim(TD_sparse)
   # load Envelope data
   # total trait data 
-  EnvTot <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
+  EnvTot <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
                                              "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  Envsparse <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  Envsparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                              "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  taxEnv <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  taxEnv <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                              "Obs_obs","data","taxInfo.csv"),header=TRUE))
-  taxEnv <- as.data.frame(read.table(file = file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  taxEnv <- as.data.frame(read.table(file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                                      "Obs_obs","data","taxInfo.csv"),
                                     sep=",",col.names = c("ID","Species","Genus","Family","Clade")))
   ID_env <- taxEnv[,1]
@@ -106,11 +94,11 @@ colz=colz1[c(1,5,2,3,4)]
   summary(EnvTot)
   Env <- EnvTot[,colnames(EnvTot)%in%colnames(TD)]
   Env_sp <- Envsparse[,colnames(Envsparse)%in%colnames(TD)]
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
   # predicted 
-  TDtd <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDtd <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
-  TDenv <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                         "Obs_obs_TD","data","traitInfoTD_pred.csv")))[,-c(1,2)]
   head(TDtd)
   head(TDenv)
@@ -194,17 +182,18 @@ for(t in 1:length(trait_names)){
   
 getwd()
 setwd(origin)
-list.files(file.path("_2021","figures","Figure_2"))
+list.files(file.path("figures","Figure_2"))
 
 head(m4)
 m_now=m4[,c(1,2,3,4,6,5)]
 if(t_choice=="data"){
 #pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_2_Mean_r.pdf"),width=18,height=5)
-  pdf(file=file.path("_2021","figures","Figure_2","Fig_2_Mean_r.pdf"),width=18,height=5)
+  pdf(file=file.path("figures","Figure_2","Fig_2_Mean_r.pdf"),width=18,height=5)
 }
+
 if(t_choice=="data_2"){
   #pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_S2_Mean_r.pdf"),width=18,height=4)
-  pdf(file=file.path("_2021","figures","Figure_2","Fig_S2_Mean_r.pdf"),width=18,height=4)
+  pdf(file=file.path("figures","Figure_2","Fig_S2_Mean_r.pdf"),width=18,height=4)
 }
 if(t_choice=="data_2"){
   colnames(m_now) <- c("TD2","TD2_sparse","TD2_td","ExTD2","ExTD2_sparse", "TD2_ext")
@@ -231,7 +220,7 @@ if(t_choice=="data_2"){
     #abline(h=seq(0,max(m_now[t,]),length.out=6),col="gray",lty=2)
     #barplot(m_now[t,],col=colz,border = "white",add=TRUE)
   }
-  dev.off()
   
 }
 
+dev.off()

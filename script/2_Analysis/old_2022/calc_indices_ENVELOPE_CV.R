@@ -8,48 +8,42 @@
 # - number of values available
 # - original number of values available
 
+
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
-t_choices <- out$tsubs
-TDnos = out$TD_choices
-repnums = out$repnums
-gappercents = out$gappercents
-whichDataSet = out$whichDataSet
-ObsSpec = out$ObsSpec
-obsspec = ObsSpec
-preparation = out$preparation
-trait_guido = out$trait_guido
-trait_rainfor = out$trait_rainfor
-colz1 = out$colz1
-colz2 = out$colz2
-new.mean.fun = out$new.mean.fun
-new.sd.fun = out$new.sd.fun
-add_col_to_res <- out$add_col_to_res
-gappercents=c(1,5,10,20,30,40,50,60,70,80)
-
+out <- choices(originData)
+  t_choices <- out$tsubs
+  TDnos = out$TD_choices
+  repnums = out$repnums
+  gappercents = out$gappercents
+  whichDataSet = out$whichDataSet
+  ObsSpec = out$ObsSpec
+  obsspec = ObsSpec
+  preparation = out$preparation
+  trait_guido = out$trait_guido
+  trait_rainfor = out$trait_rainfor
+  colz1 = out$colz1
+  colz2 = out$colz2
+  new.mean.fun = out$new.mean.fun
+  new.sd.fun = out$new.sd.fun
+  add_col_to_res <- out$add_col_to_res
+  gappercents=c(1,5,10,20,30,40,50,60,70,80)
+  
 #----------------------------------------------
 # define functions
 #----------------------------------------------
@@ -134,33 +128,33 @@ for(RepNum in 1:3){
     # load trait data   
     #-------------------------------------------------------------------
     if((ObsOrTD=="Obs_obs"|ObsOrTD=="Obs_obs_TD")&MFdo==FALSE){
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
       # taxonomy 
-      taxInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      taxInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD,"data","taxInfoTD.csv"),header=TRUE)[,-1]
       dim(taxInfo)
       
       # observed 
-      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                            ObsOrTD,"data","traitInfoTD_obs.csv")))[,-c(1,2)]
       dim(traitInfo_obs_sparse)
       # completely observed  untransformed
-      traitInfo_obs <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                     ObsOrTD,"data","traitInfoTD_obs.csv")))[,-c(1,2)]
-      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                          ObsOrTD,"data","traitInfoTD_obs_zlog.csv")))[,-c(1,2)]
-      traitInfo_pred <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                      ObsOrTD,"data","traitInfoTD_pred.csv")))[,-c(1,2)]
-      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                           ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")))[,-c(1,2)]
       dim(traitInfo_obs)
     }
     if((ObsOrTD=="Obs_obs"|ObsOrTD=="Obs_obs_TD")&MFdo){
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD,"data"))
       # taxonomy 
-      taxInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      taxInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD,"data","taxInfoTD.csv"),header=TRUE)[,-1]
       head(taxInfo)
       # replace with one species only
@@ -175,29 +169,29 @@ for(RepNum in 1:3){
       dim(taxInfo)
       
       # observed 
-      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                            ObsOrTD,"data","traitInfoTD_obs.csv")))[,-c(1,2)]
       dim(traitInfo_obs_sparse)
       # completely observed  untransformed
-      traitInfo_obs <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                     ObsOrTD,"data","traitInfoTD_obs.csv")))[,-c(1,2)]
-      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                          ObsOrTD,"data","traitInfoTD_obs_zlog.csv")))[,-c(1,2)]
-      traitInfo_pred <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                      ObsOrTD,"data","traitInfoTD_predMF.csv")))[,-c(1,2)]
-      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                           ObsOrTD,"data","traitInfoTD_pred_REzlogMF.csv")))[,-c(1,2)]
       dim(traitInfo_pred)
     }
     
     if(ObsOrTD=="Obs_obsTot"&MFdo==FALSE){
       ObsOrTD_now="Obs_obs"
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD_now,"data"))
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD_now,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD_now,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD_now,"data"))
       # taxonomy 
-      taxInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      taxInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD_now,"data","taxInfo.csv"),header=FALSE)
-      funInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      funInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD_now,"data","funInfo.csv"),header=TRUE)[,-1]
       colnames(taxInfo) <- c("ObservationID","Species","Genus","Family","Clades")
       head(taxInfo)
@@ -205,30 +199,30 @@ for(RepNum in 1:3){
       taxInfo <- cbind(taxInfo,funInfo[,-1])
       
       # observed 
-      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                            ObsOrTD_now,"data","traitInfo.csv")))[,-c(1,2)]
       head(traitInfo_obs_sparse)
       dim(traitInfo_obs_sparse)
       # completely observed  untransformed
-      traitInfo_obs <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                     ObsOrTD_now,"data","traitInfo.csv")))[,-c(1,2)]
-      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                          ObsOrTD_now,"data","traitInfo_zlog.csv")))[,-c(1)]
       dim(traitInfo_obs)
-      traitInfo_pred <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                      ObsOrTD_now,"data","traitInfo_pred.csv")))[,-c(1,2)]
       head(traitInfo_pred)
       dim(traitInfo_pred)
-      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                           ObsOrTD_now,"data","traitInfo_pred_zlog.csv")))[,-c(1,2)]
       dim(traitInfo_pred_zlog)
     }
     if(ObsOrTD=="Obs_obsTot"&MFdo){
       ObsOrTD_now="Obs_obs"
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD_now,"data"))
-      list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD_now,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD_now,"data"))
+      list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),ObsOrTD_now,"data"))
       # taxonomy 
-      taxInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      taxInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD_now,"data","taxInfo.csv"),header=FALSE)
       head(taxInfo)
       # replace with one species only
@@ -241,7 +235,7 @@ for(RepNum in 1:3){
       taxInfo <- taxInfoMF
       colnames(taxInfo) <- c("ObservationID","Species","Genus","Family","Clade")
       
-      funInfo <- read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      funInfo <- read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                     ObsOrTD_now,"data","funInfo.csv"),header=TRUE)[,-1]
       colnames(taxInfo) <- c("ObservationID","Species","Genus","Family","Clades")
       head(taxInfo)
@@ -249,27 +243,27 @@ for(RepNum in 1:3){
       taxInfo <- cbind(taxInfo,funInfo[,-1])
       
       # observed 
-      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_obs_sparse <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                            ObsOrTD_now,"data","traitInfo.csv")))[,-c(1,2)]
       head(traitInfo_obs_sparse)
       dim(traitInfo_obs_sparse)
       # completely observed  untransformed
-      traitInfo_obs <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                     ObsOrTD_now,"data","traitInfo.csv")))[,-c(1,2)]
-      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+      traitInfo_obs_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                                          ObsOrTD_now,"data","traitInfo_zlog.csv")))[,-c(1)]
       dim(traitInfo_obs)
-      traitInfo_pred <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                      ObsOrTD_now,"data","traitInfo_predMF.csv")))[,-c(1,2)]
       head(traitInfo_pred)
-      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
+      traitInfo_pred_zlog <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_",Percent),
                                                           ObsOrTD_now,"data","traitInfo_pred_zlogMF.csv")))[,-c(1,2)]
       dim(traitInfo_pred_zlog)
     }
     
     print("data loaded")
     
-    whichtraits = which(colnames(traitInfo_obs_zlog)%in%unique(c(out$trait_guido,out$trait_rainfor)))
+    whichtraits = which(colnames(traitInfo_obs_zlog)%in%unique(c(trait_guido,trait_rainfor)))
     nb_rows = nrow(traitInfo_obs) + 
       (ncol(traitInfo_obs_zlog)*nrow(traitInfo_obs)) 
     res <- as.data.frame(matrix(NA,ncol=125,nrow=nb_rows))
@@ -493,22 +487,22 @@ for(RepNum in 1:3){
     }
     
     
-    if(!file.exists(file.path(origin,"_2021","data","analyses"))){
-      dir.create(file.path(origin,"_2021","data","analyses"))}
-    if(!file.exists(file.path(origin,"_2021","data","analyses","Point_wise"))){
-      dir.create(file.path(origin,"_2021","data","analyses","Point_wise"))}
-    if(!file.exists(file.path(origin,"_2021","data","analyses","Point_wise",RepNum))){
-      dir.create(file.path(origin,"_2021","data","analyses","Point_wise",RepNum))}
-    if(!file.exists(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice))){
-      dir.create(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice))}
-    if(!file.exists(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD))){
-      dir.create(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD))}
-    if(!file.exists(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent))){
-      dir.create(file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent))}
+    if(!file.exists(file.path(originData,"analyses"))){
+      dir.create(file.path(originData,"analyses"))}
+    if(!file.exists(file.path(originData,"analyses","Point_wise"))){
+      dir.create(file.path(originData,"analyses","Point_wise"))}
+    if(!file.exists(file.path(originData,"analyses","Point_wise",RepNum))){
+      dir.create(file.path(originData,"analyses","Point_wise",RepNum))}
+    if(!file.exists(file.path(originData,"analyses","Point_wise",RepNum,t_choice))){
+      dir.create(file.path(originData,"analyses","Point_wise",RepNum,t_choice))}
+    if(!file.exists(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD))){
+      dir.create(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD))}
+    if(!file.exists(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent))){
+      dir.create(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent))}
     res <- res[,colSums(!is.na(res))!=0]
     res <- res[rowSums(!is.na(res))!=0,]
     
-    write.csv(res,file=file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
+    write.csv(res,file=file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
     
     print("res written.")
 
@@ -524,7 +518,7 @@ RepNum=1
 t_choice="data"
 ObsOrTD="Obs_obsMF"
 Percent=80
-resENV <- read.csv(file=file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
+resENV <- read.csv(file=file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
 dim(resENV)
 plot(resENV$value_obs_zlog,resENV$value_pred_zlog)
 
@@ -532,7 +526,7 @@ RepNum=1
 t_choice="data"
 ObsOrTD="Obs_obsTot"
 Percent=80
-resENV2 <- read.csv(file=file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
+resENV2 <- read.csv(file=file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_indMF.csv")))
 head(resENV$Sil_spec_obs_zlog)
 plot(resENV2$value_obs_zlog,resENV2$value_pred_zlog)
 plot(resENV$value_obs,resENV$value_pred)
@@ -551,7 +545,7 @@ RepNum=1
 t_choice="data"
 ObsOrTD="Obs_obs_TD"
 Percent=80
-res <- read.csv(file=file.path(origin,"_2021","data","analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_2021MF.csv")))
+res <- read.csv(file=file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_2021MF.csv")))
 head(res$Sil_spec_obs_zlog)
 #install.packages("cluster")
 #    library(cluster)

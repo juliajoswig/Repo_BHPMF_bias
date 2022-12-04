@@ -102,6 +102,70 @@
 # ** missingness levels from 0 to 80%
 # *** Obs_obs refers to the ExTD (ExTD2) and Obs_obs_TD refers to TD (TD2)
 
+
+# ------------------------------------------------------------------------------
+# re-run again
+# ------------------------------------------------------------------------------
+
+#Repetition Obs_or_Spec TraitChoice GapPercent
+#81           2     Obs_obs      data_2         10
+# rep=2 Obs_obs t_choice=data_2 percent=10 done 
+# rep=2 Obs_obs t_choice=data_2 percent=10 copy ok
+# rep=2 Obs_obs t_choice=data_2 percent=10 transform 
+# rep=2 Obs_obs t_choice=data_2 percent=10 RMSE ok
+
+#131          3     Obs_obs      data_2         70
+# rep=3 Obs_obs t_choice=data_2 percent=70 done
+# rep=3 Obs_obs t_choice=data_2 percent=70 copied data
+# rep=3 Obs_obs t_choice=data_2 percent=70 transform
+# rep=3 Obs_obs t_choice=data_2 percent=70 RMSE ok
+
+
+#        Repetition Obs_or_Spec TraitChoice GapPercent
+# 57           2     Obs_obs        data          1
+# rep=3 Obs_obs t_choice=data percent=1 running now
+
+
+# 101          3     Obs_obs        data          1
+# rep=3 Obs_obs t_choice=data percent=1 running now
+# rep=3 Obs_obs t_choice=data percent=5 copied
+# rep=3 Obs_obs t_choice=data percent=5 transformed
+# rep=3 Obs_obs t_choice=data percent=5 RMSE ok
+
+
+# 102          3     Obs_obs        data          5
+# rep=3 Obs_obs t_choice=data percent=5 running done
+# 3 Obs_obs data 5
+# rep=3 Obs_obs t_choice=data percent=5 copied
+# rep=3 Obs_obs t_choice=data percent=5 transformed
+# rep=3 Obs_obs t_choice=data percent=5 RMSE ok
+
+# 103          3     Obs_obs        data         10
+# 3 Obs_obs data 10
+# rep=3 Obs_obs t_choice=data percent=10 running done :)
+# rep=3 Obs_obs t_choice=data percent=10 copied
+# rep=3 Obs_obs t_choice=data percent=10 transform
+# rep=3 Obs_obs t_choice=data percent=10 RMSE ok
+
+# 19           1     Obs_obs        data         50
+# rep=1 Obs_obs t_choice=data percent=50 run
+# rep=1 Obs_obs t_choice=data percent=50 copied
+# rep=1 Obs_obs t_choice=data percent=50 transform
+# rep=1 Obs_obs t_choice=data percent=50 RMSE ok
+
+# 108          3     Obs_obs        data         60
+# rep=3 Obs_obs t_choice=data percent=60  running now (?)
+# rep=3 Obs_obs t_choice=data percent=60 copied
+# rep=3 Obs_obs t_choice=data percent=60 transform
+# rep=3 Obs_obs t_choice=data percent=60 RMSE ok
+
+
+# 109          3     Obs_obs        data         70
+# rep=3 Obs_obs t_choice=data percent=70 running done :)
+# rep=3 Obs_obs t_choice=data percent=70 copy to data file ok
+# rep=3 Obs_obs t_choice=data percent=70 transform
+# RMSE calculated
+
 # ------------------------------------------------------------------------------
 # 6.Analyse 
 # ------------------------------------------------------------------------------
@@ -111,12 +175,38 @@
 
 # ------------------------------------------------------------------------------
 # 6.Plot figures and tables
+# Figure 1
 # ------------------------------------------------------------------------------
 
-# Figure 1
+
+# ------------------------------------------------------------------------------
 # Figure 2
+# ------------------------------------------------------------------------------
+
+# input one repetition only.
+# how to include the other repetitions?
+
+
+# ------------------------------------------------------------------------------
 # Figure 3
+# ------------------------------------------------------------------------------
+# input
+
+
+# ------------------------------------------------------------------------------
 # Figure 4
+# ------------------------------------------------------------------------------
+# input
+
+
+# ------------------------------------------------------------------------------
 # Figure 5
+# ------------------------------------------------------------------------------
+# input
+
+
+# ------------------------------------------------------------------------------
 # Figure 6
+# ------------------------------------------------------------------------------
+# input
 

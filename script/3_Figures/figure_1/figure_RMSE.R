@@ -2,31 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
   setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
     t_choices <- out$tsubs
     TDnos = out$TD_choices
     repnums = out$repnums
@@ -47,19 +37,37 @@ out <- choices()
 res_matrix_name="res_20201020"
 #res_o=res
 res_matrix_name="res_20210303"
-res <- read.csv(file=file.path(origin,"_2021","data","analyses","TOTAL",paste0(res_matrix_name,".csv")))
+res_matrix_name="res_20221203"
+res <- read.csv(file=file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")))
 summary(res)
 list.files(file.path(origin,"runs","META"))
+
 #colz=rainbow(7)#c("red","blue","green","magenta","turquoise","orange","yellow")#
 #colz=c("#d73027","#f46d43","#fdae61","#fee08b","#d9ef8b","#a6d96a","#66bd63","#1a9850")
 #colz=c("#d7191c","#2c7bb6","#fdae61","#abd9e9")#"#ffffbf",
 #colz1=c("#f0f9e8","#bae4bc","#7bccc4","#43a2ca","#0868ac")#"#ffffbf",
 #colz2=c("#fef0d9","#fdcc8a","#fc8d59","#e34a33","#b30000")#"#ffffbf",
-output_term="2020"
+output_term="2022"
 
 # RMSE increases with gap-size
 # RMSE different for traits
 # RMSE different for data set
+
+
+pattern_now="RMSE"
+
+#--------------------------------------
+# check for missing 
+ix1=res[,colnames(res)=="TraitChoice"]=="data_2"
+dat_rmse <- res[ix1,c(1,2,3,4,grep(colnames(res),pattern = pattern_now))]
+dat_rmse <- dat_rmse[,colSums(is.na(dat_rmse))!=66]
+dat_rmse[rowSums(is.na(dat_rmse))!=0,c(1,2,3,4)]
+
+# check for missing 
+ix1=res[,colnames(res)=="TraitChoice"]=="data"
+dat_rmse <- res[ix1,c(1,2,3,4,grep(colnames(res),pattern = pattern_now))]
+dat_rmse <- dat_rmse[,colSums(is.na(dat_rmse))!=66]
+dat_rmse[rowSums(is.na(dat_rmse))!=0,c(1,2,3,4)]
 
 #--------------------------------------
 # Test if RMSE increases with gap-size
@@ -176,7 +184,7 @@ plot_TDext[,colnames(plot_TDtd)=="RMSE_gap_zlog_Total"]
 
 list.files(file.path(origin,"_2021","figures","Figure_1"))
 
-  pdf(file=file.path(origin,"_2021","figures","Figure_1","Fig_1_RMSE_zlog_.pdf"),width=8,height=7)
+  pdf(file=file.path(origin,"figures","Figure_1","Fig_1_RMSE_zlog_202212.pdf"),width=8,height=7)
   layout(matrix(c(1,1,2,2,3,
                   4,4,5,5,6),nrow=2,ncol=5,byrow=TRUE))
   par(mar=c(7,7,1,1))
