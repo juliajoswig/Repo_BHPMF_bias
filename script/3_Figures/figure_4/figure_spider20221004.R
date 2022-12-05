@@ -1,33 +1,25 @@
+# Julia Joswig 
+# 20221003, last change 202212
 
 
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-  }
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
   t_choices <- out$t_choices
   TDnos = out$TDnos
   repnums = out$repnums
@@ -52,7 +44,7 @@ out <- choices()
 #-------------------------------------------------------------------
 # load trait data   
 #-------------------------------------------------------------------
-file.path(origin,"_2021","data","analyes","Point_wise","res.csv")
+file.path(originData,"analyes","Point_wise","res.csv")
 colorset1 <- c("#b2e2e2","#66c2a4","#2ca25f","#006d2c")
 
 colzTRAITS <- c("#b2182b", "#ef8a62", "#fddbc7", "#f7f7f7", "#d1e5f0", "#67a9cf", "#2166ac")
@@ -63,21 +55,23 @@ colz_solid=c(rgb(103/255,169/255,207/255),rgb(239/255,138/255,98/255),
 ObsOrTD="Obs_obs_TD"
 Percent=80
 
-list.files(file.path(origin,"_2021","data","analyses","Point_wise",
+list.files(file.path(originData,"analyses","Point_wise",
                      RepNum,t_choice,ObsOrTD,Percent))
 
-res <- read.csv(file=file.path(origin,"_2021","data","analyses","Point_wise",RepNum,
+res <- read.csv(file=file.path(originData,"analyses","Point_wise",RepNum,
                                t_choice,ObsOrTD,Percent,paste0("res_2021_08.csv")))
+res_matrix_name="res_20221203"
+res <- read.csv(file=file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")))
 trait_names <- unique(res$trait)
 trait_names <- trait_names[!is.na(trait_names)]
 
 
 ObsOrTD="Obs_obs"
 Percent=80
-list.files(file.path(origin,"_2021","data","analyses","Point_wise",
+list.files(file.path(originData,"analyses","Point_wise",
                      RepNum,t_choice,ObsOrTD,Percent))
 
-resENV <- read.csv(file=file.path(origin,"_2021","data","analyses","Point_wise",
+resENV <- read.csv(file=file.path(originData,"analyses","Point_wise",
                                   RepNum,t_choice,ObsOrTD,Percent,paste0("res_2021_08.csv")))
 
 #-------------------------------------------------------------------
@@ -438,10 +432,10 @@ if(t_choice=="data_2"){columns_now1=1:4;columns_now=5:8}
 library(fmsb)
 {
   if(t_choice=="data"){
-  pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_Spider_r.pdf"),width = 8,height=11)
+  pdf(file=file.path(originData,"figures","Figure_6","Figure_6_Spider_r.pdf"),width = 8,height=11)
   }
   if(t_choice=="data_2"){
-    pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderTD2_r.pdf"),width = 8,height=11)}
+    pdf(file=file.path(originData,"figures","Figure_6","Figure_6_SpiderTD2_r.pdf"),width = 8,height=11)}
   layout(mat = matrix(c(1,1,
                         1,1,
                         2,3),nrow=3,byrow = TRUE))
@@ -566,10 +560,10 @@ library(fmsb)
 
 {
   if(t_choice=="data"){
-    pdf(file=file.path(origin,"_2021","figures","Figure_4","Figure_SpiderTraitWise_r.pdf"),width = 8,height=11)
+    pdf(file=file.path(originData,"figures","Figure_4","Figure_SpiderTraitWise_r.pdf"),width = 8,height=11)
   }
   if(t_choice=="data_2"){
-    pdf(file=file.path(origin,"_2021","figures","Figure_4","Figure_S_SpiderTD2TraitWise_r.pdf"),width = 8,height=11)}
+    pdf(file=file.path(originData,"figures","Figure_4","Figure_S_SpiderTD2TraitWise_r.pdf"),width = 8,height=11)}
   par(mar=c(2,2,4,2),xpd = TRUE)
   layout(mat = matrix(c(1,1,
                         1,1,
@@ -680,16 +674,21 @@ library(fmsb)
 
 
 
+data_chart <- matrix(0,ncol=6,nrow=4)
+data_chart <- rbind(data_chart,rep(1,6))
 
 #data_charto <- data_chart
-#data_chart <- data_charto
 #data_chart <- data_chart[1:3,]
 data_chart[3,] <- c(3,3,3,3,3,3)
+data_chart <- data.frame(data_chart)
 # ---------------------------------------------------------------------
 # explanatory figure
 # ---------------------------------------------------------------------
+getwd()
+list.files(file.path(origin,"figures"))
 
-pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderExplain_r.pdf"),width = 18,height=6)
+pdf(file = file.path(origin,"figures","Figure_5","Figure_SpiderExplain_r.pdf"), width = 18,height=6)
+
   par(mar=c(0,0,0,0),xpd = TRUE,mfrow=c(1,2))
   
   radarchart(data_chart, pcol = "white", cglty = 1, 
@@ -702,22 +701,17 @@ pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderExplain_r
                              "0.75",
                              "0.5",
                              "0.25",
-                             "0"),
-             vlabels = c("species clustered",
-                          "genera clustered",
-                          "families clustered",
-                          "clades clustered",
-                          "GF clustered",
-                             "PFT clustered"
-#                             "dist(x,lm(SLA))",
-#                             "dist(x,lm(height))",
-#                             "dist(x,lm(SSD))",
-#                             "dist(x,lm(LeN))",
-#                             "dist(x,lm(LeP))")
+                             "0 strong clustering"),
+             vlabels = c("species",
+                          "genera",
+                          "families",
+                          "clades",
+                          "GF",
+                             "PFT"
 ))
   
   plot(x=1:10,y=1:10,col="white",frame=FALSE,xaxt="n",yaxt="n",ylab="",xlab="")
-  legend(0.5,10,legend = c("TD - reference line for:","TDtd","TDext"),
+  legend(0.5,10,legend = c("OBS - reference line for:","IMPobs","IMPobsExt"),
          col=colz_solid[1:3],lwd=8,lty=1,bty="n",cex=3)
   text(2.6,5,labels = "x: individual trait value",cex=2)
    
@@ -729,7 +723,7 @@ pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderExplain_r
   dev.off()
 
   
-  pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderExplainTD2_r.pdf"),width = 18,height=6)
+  pdf(file = file.path(origin,"figures","Figure_5","Figure_SpiderExplainTD2_r.pdf"), width = 18, height=6)
   par(mar=c(0,0,0,0),xpd = TRUE,mfrow=c(1,2))
   
   radarchart(data_chart, pcol = "white", cglty = 1, 
@@ -742,29 +736,22 @@ pdf(file=file.path(origin,"_2021","figures","Figure_6","Figure_6_SpiderExplain_r
                              "0.75",
                              "0.5",
                              "0.25",
-                             "0"),
-             vlabels = c("species clustered",
-                         "genera clustered",
-                         "families clustered",
-                         "clades clustered",
-                         "GF clustered",
-                         "PFT clustered"
-                         #                             "dist(x,lm(SLA))",
-                         #                             "dist(x,lm(height))",
-                         #                             "dist(x,lm(SSD))",
-                         #                             "dist(x,lm(LeN))",
-                         #                             "dist(x,lm(LeP))")
+                             "0 strong clustering"),
+             vlabels = c("species",
+                         "genera",
+                         "families",
+                         "clades",
+                         "GF",
+                         "PFT"
              ))
   
   plot(x=1:10,y=1:10,col="white",frame=FALSE,xaxt="n",yaxt="n",ylab="",xlab="")
-  legend(0.5,10,legend = c("TD2 - reference line for:","TD2td","TD2ext"),
+  legend(0.5,10,legend = c("OBS2 - reference line for:","IMP2obs","IMP2obsExt"),
          col=colz_solid[1:3],lwd=8,lty=1,bty="n",cex=3)
   text(2.6,5,labels = "x: individual trait value",cex=2)
   
   text(2.75,4,labels = "Little clustering = centre",cex=2)
   text(3.4,3,labels = "Strong Clustering = circle border",cex=2)
-  #  text(4.75,2,labels = "lm(trait_n): residual of predicted target trait value ",cex=2)
-  #  text(2.5,1,labels = "from lm, input trait_n",cex=2)
   
   dev.off()
   
