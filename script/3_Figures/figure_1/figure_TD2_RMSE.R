@@ -192,7 +192,7 @@ list.files(file.path(origin,"figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         colnames(plot_TD2td)
-        text(10,.58,"TD2td",cex=2)
+        text(35,.58,"IMP2_obs",cex=2)
         
         lines(plot_TD2td[,1],plot_TD2td[,colnames(plot_TD2td)=="RMSE_zlog_Total"],col="black",lwd=3)
         
@@ -227,7 +227,7 @@ list.files(file.path(origin,"figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         
-        text(12,.58,"TD2ext",cex=2)
+        text(35,.58,"IMP2_obsExt",cex=2)
         colnames(plot_TD2ext)
         lines(plot_TD2ext[,1],plot_TD2ext[,colnames(plot_TD2ext)=="RMSE_zlog_Total"],col="black",lwd=3)
         
@@ -272,7 +272,7 @@ list.files(file.path(origin,"figures","Figure_1"))
         rect(ybottom = .3,ytop = .35,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
-        text(21,.58,"TD2td gaps",cex=2)
+        text(35,.58,"IMP2_obs gaps",cex=2)
         
         colnames(plot_TD2td)
         
@@ -311,7 +311,7 @@ list.files(file.path(origin,"figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         colnames(plot_TD2ext)
-        text(22,.58,"TD2ext gaps",cex=2) 
+        text(35,.58,"IMP2_obsExt gaps",cex=2) 
         i=1
         for(i in 1:length(trait_names)){
           print(trait_names[i])

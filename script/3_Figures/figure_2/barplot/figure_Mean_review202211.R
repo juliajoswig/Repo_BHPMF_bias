@@ -41,7 +41,7 @@ out <- choices(originData)
   # chose trait data   
   #-------------------------------------------------------------------
   repnums=3
-  t_choice="data"
+  t_choice="data_2"
   GapPercent=80
   RepNum=1
   
@@ -100,6 +100,7 @@ colz=colz1[c(1,5,2,3,4)]
                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
   TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                         "Obs_obs_TD","data","traitInfoTD_pred.csv")))[,-c(1,2)]
+  
   head(TDtd)
   head(TDenv)
   plot(TD[,1],TDtd[,1])
@@ -126,21 +127,24 @@ abline(0,1)
 length(ID_env)
 length(ID_TD)
 
-plot(Env[match(ID_TD,ID_env),2],TDtd[,2])
+plot(Env[match(ID_TD,ID_env),5],TDtd[,5])
 plot(Env[match(ID_TD,ID_env),1],TDenv[,1])
 abline(0,1)
 print("Yaaay loaded :)")
 
+# create Ext
+# cut OBS from Env to receive Ext(202212)
+#Ext <- Env[!ID_env%in%match(ID_TD,ID_env),]
 
 # table
 m1 <- matrix(NA,ncol=6,nrow=length(trait_names))
 m2 <- matrix(NA,ncol=6,nrow=length(trait_names))
 m3 <- matrix(NA,ncol=6,nrow=length(trait_names))
 m4 <- matrix(NA,ncol=6,nrow=length(trait_names))
-colnames(m1) <- c("TD","TD_sparse","TD_td","ExTD","TD_ext","ExTD_sparse")
-colnames(m2) <-  c("TD","TD_sparse","TD_td","ExTD","TD_ext","ExTD_sparse")
-colnames(m3) <-  c("TD","TD_sparse","TD_td","ExTD","TD_ext","ExTD_sparse")
-colnames(m4) <-  c("TD","TD_sparse","TD_td","ExTD","TD_ext","ExTD_sparse")
+colnames(m1) <- c("OBS","OBS_sparse","IMP_obs","TRY17","IMP_obsExt","TRY17_sparse")
+colnames(m2) <-  c("OBS","OBS_sparse","IMP_obs","TRY17","IMP_obsExt","TRY17_sparse")
+colnames(m3) <-  c("OBS","OBS_sparse","IMP_obs","TRY17","IMP_obsExt","TRY17_sparse")
+colnames(m4) <-  c("OBS","OBS_sparse","IMP_obs","TRY17","IMP_obsExt","TRY17_sparse")
 rownames(m1) <- trait_names
 rownames(m2) <- trait_names
 rownames(m3) <- trait_names
@@ -185,7 +189,10 @@ setwd(origin)
 list.files(file.path("figures","Figure_2"))
 
 head(m4)
+
+
 m_now=m4[,c(1,2,3,4,6,5)]
+#m_now=m4[,c(1,3,4,5)]
 if(t_choice=="data"){
 #pdf(file=file.path(origin,"_2021","figures","figure_2","Fig_2_Mean_r.pdf"),width=18,height=5)
   pdf(file=file.path("figures","Figure_2","Fig_2_Mean_r.pdf"),width=18,height=5)
@@ -196,10 +203,10 @@ if(t_choice=="data_2"){
   pdf(file=file.path("figures","Figure_2","Fig_S2_Mean_r.pdf"),width=18,height=4)
 }
 if(t_choice=="data_2"){
-  colnames(m_now) <- c("TD2","TD2_sparse","TD2_td","ExTD2","ExTD2_sparse", "TD2_ext")
+  colnames(m_now) <- c("OBS2","OBS2_sparse","IMP2_obs","TRY17","TRY17_2_sparse", "IMP2_obsExt")
 }
 {
-  par(mfrow=c(1,length(trait_names)),mar=c(10,6,3,1))
+  par(mfrow=c(1,length(trait_names)),mar=c(12.5,6,3,1))
   
   colz=c("#d1e5f0",#TD
          "#d1e5f0",#TDsparse
@@ -214,7 +221,7 @@ if(t_choice=="data_2"){
   for(t in 1:length(trait_names)){
     barplot(m_now[t,],col=colz,border = "white",ylab="",main=trait_names[t],
             cex.names = 1.8,las=2,yaxt="n",cex.main=3,cex.lab=2.5,
-            cex.axis=2,width = c(1,.5,1,1,.5,1))
+            cex.axis=2,width = c(1,0.5,1,1,0.5,1),ylim=c(0,max(m_now[t,])*1.2))
     axis(2,line = 2)
     axis(2,line = 3.5,at=max(m_now[t,])/2, labels = units[t],cex.axis=1.8,tick=FALSE)
     #abline(h=seq(0,max(m_now[t,]),length.out=6),col="gray",lty=2)

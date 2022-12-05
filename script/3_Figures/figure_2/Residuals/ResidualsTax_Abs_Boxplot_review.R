@@ -55,7 +55,7 @@ if(t_choice=="data"){trait_names=trait_rainfor}
 if(t_choice=="data_2"){trait_names=trait_guido}
 
 txs=c("indiv","spec","gen","fam","clad")
-tx=0 #(0=indiv,1=spec,2=genus,3=family,4=clades)
+tx=1 #(0=indiv,1=spec,2=genus,3=family,4=clades)
 #for(tx in 0:4){
   tx=tx+1
   par(mfrow=c(4,4))
@@ -215,7 +215,7 @@ tx=0 #(0=indiv,1=spec,2=genus,3=family,4=clades)
     
 
    # par(mfrow=c(1,1),mar=c(12,4,1,1))
-    pdf(file=file.path(origin,"figures","Figure_2",paste0(txs[tx],"_boxplots_",t_choice,".pdf")),width=8,height=2.3,pointsize = 9)
+    pdf(file=file.path(origin,"figures","Residuals",paste0(txs[tx],"_boxplots_",t_choice,".pdf")),width=8,height=2.3,pointsize = 9)
     par(mfrow=c(1,6),mar=c(12,4,1,1))
     t=1
 
@@ -248,60 +248,3 @@ tx=0 #(0=indiv,1=spec,2=genus,3=family,4=clades)
 
 dev.off()
 
-
-
-{
-  # load Envelope data
-  # load TDenvelope
-  ObsOrTD="Obs_obs"
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
-  
-  # load TD data
-  # total trait data 
-  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
-                                         "Obs_obs_TD","data","traitInfoTD_obs.csv"),header=TRUE))[,-c(1,2)]
-  TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
-                                                "Obs_obs_TD","data","traitInfoTD_obs.csv"),header=TRUE))[,-c(1,2)]
-  TDtd <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
-                                           "Obs_obs_TD","data","traitInfoTD_pred.csv"),header=TRUE))[,-c(1,2)]
-  TD_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
-                                 "Obs_obs_TD","data","taxInfo.csv"), sep=",")
-  colnames(TD_tax) <- c("ObservationID","Species","Genus","Family","Clade")
-  head(TD_tax)
-  colnames(TD_tax)
-  dim(TD_tax)
-  # load Envelope data
-  # total trait data 
-  Env <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                          "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  Env <- Env[,colnames(Env)%in%colnames(TD)]
-  sum(colnames(Env)==colnames(TD))==ncol(Env)
-  
-  Env_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
-                                  "Obs_obs","data","taxInfo.csv"), sep=",")
-  colnames(Env_tax) <- c("ObservationID","Species","Genus","Family","Clade")
-  dim(Env_tax)==dim(Env)
-  Env <- Env[Env_tax[,tx]%in%TD_tax[,tx],]
-  Env_tax_c <- Env_tax[Env_tax[,tx]%in%TD_tax[,tx],]
-  
-  mtch <- match(TD_tax[,tx],Env_tax_c[,tx])
-  print(sum(TD_tax[,tx]==Env_tax_c[mtch,tx])==length(TD_tax[,tx]))
-  Env_tax_c<- Env_tax_c[mtch,]
-  Env<- Env[mtch,]
-  
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
-  # predicted 
-  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
-  TDenv
-  head(TDtd)
-  head(TDenv)
-  head(TD_sparse)
-  head(Env)
-  par(mfrow=c(1,1))
-  plot(TD[,1],TDtd[,1])
-  abline(0,1)
-  plot(TD[,1],Env[,1])      
-  abline(0,1)
-}

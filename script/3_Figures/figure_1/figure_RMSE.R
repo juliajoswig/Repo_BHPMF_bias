@@ -34,20 +34,10 @@ out <- choices(originData)
     add_col_to_res <- out$add_col_to_res
     gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
 
-res_matrix_name="res_20201020"
-#res_o=res
-res_matrix_name="res_20210303"
 res_matrix_name="res_20221203"
 res <- read.csv(file=file.path(originData,"analyses","TOTAL",paste0(res_matrix_name,".csv")))
 summary(res)
 list.files(file.path(origin,"runs","META"))
-
-#colz=rainbow(7)#c("red","blue","green","magenta","turquoise","orange","yellow")#
-#colz=c("#d73027","#f46d43","#fdae61","#fee08b","#d9ef8b","#a6d96a","#66bd63","#1a9850")
-#colz=c("#d7191c","#2c7bb6","#fdae61","#abd9e9")#"#ffffbf",
-#colz1=c("#f0f9e8","#bae4bc","#7bccc4","#43a2ca","#0868ac")#"#ffffbf",
-#colz2=c("#fef0d9","#fdcc8a","#fc8d59","#e34a33","#b30000")#"#ffffbf",
-output_term="2022"
 
 # RMSE increases with gap-size
 # RMSE different for traits
@@ -208,7 +198,7 @@ list.files(file.path(origin,"_2021","figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         colnames(plot_TDtd)
-        text(10,.58,"TDtd",cex=2)
+        text(35,.58,"IMP_obs",cex=2)
         
         lines(plot_TDtd[,1],plot_TDtd[,colnames(plot_TDtd)=="RMSE_zlog_Total"],col="black",lwd=3)
         
@@ -243,7 +233,7 @@ list.files(file.path(origin,"_2021","figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         
-        text(10,.58,"TDext",cex=2)
+        text(35,.58,"IMP_obsExt",cex=2)
         colnames(plot_TDext)
         lines(plot_TDext[,1],plot_TDext[,colnames(plot_TDext)=="RMSE_zlog_Total"],col="black",lwd=3)
         
@@ -288,7 +278,7 @@ list.files(file.path(origin,"_2021","figures","Figure_1"))
         rect(ybottom = .3,ytop = .35,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
-        text(17,.58,"TDtd gaps",cex=2)
+        text(35,.58,"IMP_obs gaps",cex=2)
         
         colnames(plot_TDtd)
         
@@ -327,7 +317,7 @@ list.files(file.path(origin,"_2021","figures","Figure_1"))
         rect(ybottom = .4,ytop = .45,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         rect(ybottom = .5,ytop = .55,xleft = -1,xright = 100,col="#EBEBEB",border = NA)
         colnames(plot_TDext)
-        text(20,.58,"TDext gaps",cex=2) 
+        text(35,.58,"IMP_obsExt gaps",cex=2) 
         i=1
         for(i in 1:length(trait_names)){
           print(trait_names[i])
