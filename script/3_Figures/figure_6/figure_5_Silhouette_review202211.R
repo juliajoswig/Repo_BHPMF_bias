@@ -1,52 +1,41 @@
 
-
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-  # start 20221003 ##############################################
-  origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/"
-  # end 20221003 ##############################################
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
-t_choices <- out$t_choices
-TDnos = out$TDnos
-repnums = out$repnums
-gappercents = out$gappercents
-whichDataSet = out$whichDataSet
-ObsSpec = out$ObsSpec
-obsspec = ObsSpec
-preparation = out$preparation
-trait_guido = out$trait_guido
-trait_rainfor = out$trait_rainfor
-colz1 = out$colz1
-colz2 = out$colz2
-new.mean.fun = out$new.mean.fun
-new.sd.fun = out$new.sd.fun
-add_col_to_res <- out$add_col_to_res
-gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
-gappercents= c("1","5","10","20","30","40","50","60")
-repnums=1:3
-
+out <- choices(originData)
+  t_choices <- out$t_choices
+  TDnos = out$TDnos
+  repnums = out$repnums
+  gappercents = out$gappercents
+  whichDataSet = out$whichDataSet
+  ObsSpec = out$ObsSpec
+  obsspec = ObsSpec
+  preparation = out$preparation
+  trait_guido = out$trait_guido
+  trait_rainfor = out$trait_rainfor
+  colz1 = out$colz1
+  colz2 = out$colz2
+  new.mean.fun = out$new.mean.fun
+  new.sd.fun = out$new.sd.fun
+  add_col_to_res <- out$add_col_to_res
+  gappercents=c(0,1,5,10,20,30,40,50,60,70,80)
+  gappercents= c("1","5","10","20","30","40","50","60")
+  repnums=1:3
+  
 GapPercent=50
 RepNum=1
 
@@ -70,13 +59,13 @@ repnums=3
   # load data
   #-------------------------------------------------------------------
   RepNum=1
-  t_choice="data"
+  t_choice="data_2"
   # TD
   ObsOrTD="Obs_obs_TD"
-  path_TD <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
-  path_TD <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
-  path_TDtax <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","taxInfo.csv")
-  path_TDfun <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","funInfo.csv")
+  path_TD <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs.csv")
+  path_TD <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfoTD_obs_REzlog.csv")
+  path_TDtax <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","taxInfo.csv")
+  path_TDfun <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","funInfo.csv")
   TD <- as.matrix(read.table(file = path_TD, sep=",", dec=".",header=TRUE))[,-c(1:2)]
   TDtax <- as.matrix(read.table(file = path_TDtax, sep=",", dec=".",col.names = c("ObservationID","Species","Genus","Family","Clade")))
   TDfun <- as.matrix(read.table(file = path_TDfun, sep=",", dec=".",header = TRUE))
@@ -84,24 +73,24 @@ repnums=3
   dim(TDtax)
   head(TDtax)
   # TDtd
-  path_TD <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
+  path_TD <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
   TDtd <- as.matrix(read.table(file = path_TD, sep=",", dec=".",header=TRUE))[,-c(1:2)]
   dev.off()
   head(TDtd)
   plot(TD[,1],TDtd[,1])
   # TDenv
   ObsOrTD="Obs_obs"
-  path_TD <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
+  path_TD <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","traitInfoTD_pred_REzlog.csv")
   TDenv <- as.matrix(read.table(file = path_TD, sep=",", dec=".",header=TRUE))[,-c(1:2)]
   head(TDtd)
   plot(TD[,1],TDenv[,1])
   abline(0,1)
   # Env
   # ObsOrTD="Obs_obs"
-  # path_Env <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfo.csv")
-  # path_Envtax <- file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","taxInfo.csv")
-  # path_PFT <- file.path(origin,"_2021","data","helper_data","functional_information","PFT_Obs.csv")
-  # path_GF <- file.path(origin,"_2021","data","helper_data","functional_information","GF_Obs.csv")
+  # path_Env <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_0",ObsOrTD,"data","traitInfo.csv")
+  # path_Envtax <- file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,"p_80",ObsOrTD,"data","taxInfo.csv")
+  # path_PFT <- file.path(originData,"helper_data","functional_information","PFT_Obs.csv")
+  # path_GF <- file.path(originData,"helper_data","functional_information","GF_Obs.csv")
   # Env <- as.matrix(read.table(file = path_Env, sep=",", dec=".",header=TRUE))[,-c(1:2)]
   # Envtax <- as.data.frame(read.table(file = path_Envtax, sep=",", dec=".",col.names = c("ObservationID","Species","Genus","Family","Clade")))
   # head(PFT)
@@ -183,10 +172,13 @@ repnums=3
   #-----------------------------------------------------------------------------
   # plot it now
   #-----------------------------------------------------------------------------
-  
-  pdf(file=file.path(origin,"_2021","figures","Figure_5",paste0("Figure_5_Silouette.pdf")),width=20,height=10)
-  
-  par(mar=c(17,0,4,0),mfrow=c(1,7))
+  if(t_choice=="data"){
+  pdf(file=file.path(origin,"figures","Figure_6",paste0("Figure_Silouette.pdf")),width=20,height=10)
+  }
+  if(t_choice=="data_2"){
+    pdf(file=file.path(origin,"figures","Figure_6",paste0("Figure_SilouetteTD2.pdf")),width=20,height=10)
+  }
+  par(mar=c(19,0,4,0),mfrow=c(1,7))
   {
     ymax=1
     ymin=-1
@@ -205,7 +197,7 @@ repnums=3
       dat_now[dat_now==0]=NA
       boxplot(dat_now,ylim=c(ymin,ymax),ylab="Silhouette index",col=colz_solid,main=names_now[t],cex.main=5,
               las=2,cex.axis=4.5,cex.lab=4.5,lwd=2,yaxt="n",frame=FALSE,xaxt="n")
-      axis(1,at = 1:ncol(dat_now),labels = c("TD","TD_td","TD_ext"),las=2,cex.axis=4.5,tick=FALSE)
+      axis(1,at = 1:ncol(dat_now),labels = c("OBS","IMPobs","IMPobsExt"),las=2,cex.axis=4.5,tick=FALSE)
       yBot_now=median(dat_now[,1],na.rm = TRUE)
       i=1
       rect(xleft = .5,ybottom = ymin,xright = 4.5,ytop = yBot_now[i],col=colz[6],border = NA)
