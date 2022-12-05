@@ -54,6 +54,7 @@ out <- choices(originData)
   repnums=3
   td=1
   p=3
+  TDno=1
   
   for(RepNum in 1:3){
     for(td in 1:2){

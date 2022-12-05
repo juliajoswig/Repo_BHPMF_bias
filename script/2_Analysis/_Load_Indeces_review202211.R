@@ -41,9 +41,9 @@ out <- choices(originData)
 #------------------------------------------------------------
     #res_matrix_name="res_20211114"#"res_20201112"
     res_matrix_name="res_20221203"#"res_20201112"
-    create_res(res_matrix_name = res_matrix_name,tsubs = t_choices,
-               TD_choices = TDnos,repnums = 1:3,gappercents = gappercents,
-               whichDataSet =whichDataSet,ObsSpec =  1:2,originData=originData)
+    #create_res(res_matrix_name = res_matrix_name,tsubs = t_choices,
+    #           TD_choices = TDnos,repnums = 1:3,gappercents = gappercents,
+    #           whichDataSet =whichDataSet,ObsSpec =  1:2,originData=originData)
 #-------------------------------------------------------------------
 # Loop through all runs and load the indices
 #-----------------------------------------------------------------
@@ -68,7 +68,6 @@ out <- choices(originData)
   td=1
   tc=1
   p=3
-  gappercents=80
   
   for(RepNum in 1:3){
     for(tc in 1:2){
@@ -91,6 +90,8 @@ out <- choices(originData)
                       res[,2]== ObsOrTD & 
                       res[,3]== t_choice & 
                       as.numeric(res[,4])== Percent)
+        
+        
         I=1
         for(I in 1:length(Indeces)){
        
@@ -116,7 +117,7 @@ out <- choices(originData)
           }
         } 
         
-        # sil   
+        # sil
         # set path
         if(Index_now=="Sil"){
             print("Silhouette Index")
@@ -228,7 +229,7 @@ out <- choices(originData)
       
         # Corr
       if(Index_now == "Corr"){
-        cor_path=       file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl.csv"))
+        cor_path =      file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl.csv"))
         cor_zlog_path = file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl_zlog.csv"))
         
         if(file.exists(cor_path)){
