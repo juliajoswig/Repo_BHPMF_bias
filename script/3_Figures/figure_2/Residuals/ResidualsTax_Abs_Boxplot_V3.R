@@ -45,7 +45,7 @@ out <- choices(originData)
 #-------------------------------------------------------------------
 # chose trait data   
 #-------------------------------------------------------------------
-t_choice="data_2"
+t_choice="data"
 if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
 if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","")}
 if(t_choice=="data"){RepNum=1}
@@ -65,18 +65,15 @@ for(tx in 0:4){
     #-------------------------------------------------------------------
 #    file.path(originData,"analyes","Point_wise","res.csv")
     colz=colz1
-    
     #load data
-
-    
-    {
+  {
       # load Envelope data
       # load TDenvelope
       list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD","data"))
       list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
       list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),"Obs_obs_TD"))
       # load TD data
-      # total trait data 
+      # OBSERVED
       TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                              "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
       TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
@@ -89,31 +86,11 @@ for(tx in 0:4){
       dim(TD_tax)
       dim(TD)
       dim(TD_sparse)
-      # load Envelope data
-      # total trait data 
-      EnvTot <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
-                                                 "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-      EXT <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                                    "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-      taxEnv <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                                 "Obs_obs","data","taxInfo.csv"),header=TRUE))
-      taxEnv <- as.data.frame(read.table(file = file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
-                                                          "Obs_obs","data","taxInfo.csv"),
-                                         sep=",",col.names = c("ID","Species","Genus","Family","Clade")))
-      ID_env <- taxEnv[,1]
-      dim(taxEnv)
-      #cut down to columns
-      Env <- EnvTot[,colnames(EnvTot)%in%colnames(TD)]
-      Env_sp <- EXT[,colnames(EXT)%in%colnames(TD)]
-      #cut down to taxa necessary
-      Env_tax_c <- taxEnv[taxEnv[,tx]%in%TD_tax[,tx],]
-      taxEnv_c  <- Env_tax_c # 20221207
-      Env <- Env[taxEnv[,tx]%in%TD_tax[,tx],]
-      Env_sp <- Env_sp[taxEnv[,tx]%in%TD_tax[,tx],]
-      
-      names(taxEnv_c)[1] <- c("ObservationID") 
+      plot(TD[,1],TD_sparse[,1])
+      abline(0,1)
       
       list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),"Obs_obs_TD","data"))
+      
       # predicted 
       TDtd <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                            "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
@@ -121,11 +98,9 @@ for(tx in 0:4){
                                             "Obs_obs_TD","data","traitInfoTD_pred.csv")))[,-c(1,2)]
       head(TDtd)
       head(TDenv)
+      
       plot(TD[,1],TDtd[,1])
       abline(0,1)
-#      plot(TD_sparse[,1],Env[match(TD_tax$ID,taxEnv_c$ObservationID),1])
-#      abline(0,1)
-      plot(TD[,1],Env_sp[match(TD_tax$ID,taxEnv_c$ObservationID),1])
       plot(TD[,1],TDenv[,1])
       abline(0,1)
       plot(TD_sparse[,1],TD[,1])
@@ -147,20 +122,6 @@ for(tx in 0:4){
       }
     }
     
-    #_________________________________________________
-    # aggregate TD to taxon mean
-    #-------------------------------------------------
-    TD_tx <- aggregate(TD,by=list(TD_tax[,tx]),FUN = mean.fun)
-    TD_sparse_tx <- aggregate(TD_sparse,by=list(TD_tax[,tx]),FUN = mean.fun)
-    TDtd_tx <- aggregate(TDtd,by=list(TD_tax[,tx]),FUN = mean.fun)
-    TDenv_tx <- aggregate(TDenv,by=list(TD_tax[,tx]),FUN = mean.fun)
-    Env_sparse_tx <- aggregate(Env_sp,by=list(Env_tax_c[,tx]),FUN = mean.fun)
-    
-    TD_tx <- TD_tx[,-which(colnames(TD_tx)=="Group.1")]
-    TD_sparse_tx <- TD_sparse_tx[,-which(colnames(TD_sparse_tx)=="Group.1")]
-    TDtd_tx <- TDtd_tx[,-which(colnames(TDtd_tx)=="Group.1")]
-    TDenv_tx <- TDenv_tx[,-which(colnames(TDenv_tx)=="Group.1")]
-    Env_sparse_tx <- Env_sparse_tx[,-which(colnames(Env_sparse_tx)=="Group.1")]
     
     
     #_________________________________________________
@@ -168,49 +129,92 @@ for(tx in 0:4){
     #-------------------------------------------------
     {
       res <- list()
-      res$TDtd_tx <- TDtd_tx
-      res$TD_tx <- TD_tx
-      res$TDenv_tx <- TDenv_tx
-      res$TD_sparse_tx <- TD_sparse_tx
-      res$Env_sparse_tx <- Env_sparse_tx
+      res$TDtd <- TDtd
+      res$TD <- TD
+      res$TDenv <- TDenv
+      res$TD_sparse <- TD_sparse
+      #res$Env_sparse_tx <- Env_sparse_tx
       for(t in 1:length(trait_names)){
         whichcol=which(colnames(TD_tx)==trait_names[t])
         
         TDmn=mean(log(TD[,whichcol]),na.rm = TRUE)
-        TDsd=mean(log(TD[,whichcol]),na.rm = TRUE)
+        TDsd=sd(log(TD[,whichcol]),na.rm = TRUE)
         
         # zlog transform on the basis of TD        
-        res$TD_tx[,whichcol] <-         (log(TD_tx[,whichcol])        -TDmn)/TDsd #zlog TD
-        res$TDtd_tx[,whichcol] <-       (log(TDtd_tx[,whichcol])      -TDmn)/TDsd #zlog TDtd
-        res$TDenv_tx[,whichcol] <-      (log(TDenv_tx[,whichcol])     -TDmn)/TDsd #zlog TDenv
-        res$TD_sparse_tx[,whichcol] <-  (log(TD_sparse_tx[,whichcol]) -TDmn)/TDsd #zlog TD_sparse
-        res$Env_sparse_tx[,whichcol] <- (log(Env_sparse_tx[,whichcol])-TDmn)/TDsd #zlog TD_sparse
+        res$TD[,whichcol] <-         (log(res$TD[,whichcol])        -TDmn)/TDsd #zlog TD
+        res$TD_sparse[,whichcol] <-  (log(res$TD_sparse[,whichcol]) -TDmn)/TDsd #zlog TD_sparse
+        res$TDtd[,whichcol] <-       (log(res$TDtd[,whichcol])      -TDmn)/TDsd #zlog TDtd
+        res$TDenv[,whichcol] <-      (log(res$TDenv[,whichcol])     -TDmn)/TDsd #zlog TDenv
+        #res$Env_sparse_tx[,whichcol] <- (log(Env_sparse_tx[,whichcol])-TDmn)/TDsd #zlog TD_sparse
       }
-}
-      TDtd_now <- res$TDtd_tx
-      TD_now <- res$TD_tx
-      TDenv_now <- res$TDenv_tx
-      TD_sparse_now <- res$TD_sparse_tx
-      Env_sparse_now <- res$Env_sparse_tx
-
-#      plot(TD_sparse_tx[,1],Env_sparse_tx[match(TD_tax$ID,Env_tax_c$ID),1])
+      
+      par(mfrow=c(1,2))
+      plot(res$TD[,1],res$TDtd[,1])
+      abline(0,1)
+      plot(TD[,1],TDtd[,1])
       abline(0,1)
       
+      plot(res$TD[,1],res$TDenv[,1])
+      abline(0,1)
+      plot(TD[,1],TDenv[,1])
+      abline(0,1)
+      
+      plot(res$TD_sparse[,1],res$TD[,1])
+      abline(0,1)
+      plot(TD_sparse[,1],TD[,1])
+      abline(0,1)
+      
+    }
+    
+    
+    
+    TDtd_zlog <- res$TDtd
+    TD_zlog <- res$TD
+    TDenv_zlog <- res$TDenv
+    TD_sparse_zlog <- res$TD_sparse
+    #Env_sparse_now <- res$Env_sparse_tx
+    
+    
+    
+    
+    
+    #_________________________________________________
+    # aggregate TD to taxon mean
+    #-------------------------------------------------
+    TD_tx <- aggregate(TD_zlog,by=list(TD_tax[,tx]),FUN = mean.fun)
+    TD_sparse_tx <- aggregate(TD_sparse_zlog,by=list(TD_tax[,tx]),FUN = mean.fun)
+    TDtd_tx <- aggregate(TDtd_zlog,by=list(TD_tax[,tx]),FUN = mean.fun)
+    TDenv_tx <- aggregate(TDenv_zlog,by=list(TD_tax[,tx]),FUN = mean.fun)
+    #Env_sparse_tx <- aggregate(Env_sp,by=list(Env_tax_c[,tx]),FUN = mean.fun)
+    
+    TD_tx <- TD_tx[,-which(colnames(TD_tx)=="Group.1")]
+    TD_sparse_tx <- TD_sparse_tx[,-which(colnames(TD_sparse_tx)=="Group.1")]
+    TDtd_tx <- TDtd_tx[,-which(colnames(TDtd_tx)=="Group.1")]
+    TDenv_tx <- TDenv_tx[,-which(colnames(TDenv_tx)=="Group.1")]
+    #Env_sparse_tx <- Env_sparse_tx[,-which(colnames(Env_sparse_tx)=="Group.1")]
+    
+    
+    
+ #------------------------------------------------------------------------
       # residuals of TDtd to TD: 
-      bxplTDtd_TD= TDtd_now - TD_now
+      bxplTDtd_TD = TDtd_tx - TD_tx
+      summary(bxplTDtd_TD)
       #        plot(TDtd_now,TD_now);abline(0,1)
       # residuals of TDtd to TDsparse: 
-      bxplTDtd_TDsparse=TDtd_now- TD_sparse_now
+      bxplTDtd_TDsparse=TDtd_tx- TD_sparse_tx
+      summary(bxplTDtd_TDsparse)
       #        plot(TDtd_now,TD_sparse_now);abline(0,1)
       # residuals of TDtd to EXT: 
 #      dim(TD_tax$ID%in%Env_tax_c$ID)
 #      bxplTDtd_EXT=TDtd_now- Env_sparse_now[TD_tax$ID%in%Env_tax_c$ID,]
 #      #        plot(TDtd_now,Env_sparse_now);abline(0,1)
 #      # residuals of TDenv to EXT: 
-      bxplTDenv_TDsparse=TDenv_now - TD_sparse_now
+      bxplTDenv_TDsparse=TDenv_tx - TD_sparse_tx
+      summary(bxplTDenv_TDsparse)
       #        plot(TDenv_now,Env_sparse_now);abline(0,1)
       # residuals of TDenv to TD: 
-      bxplTDenv_TD = TDenv_now - TD_now
+      bxplTDenv_TD = TDenv_tx - TD_tx
+      summary(bxplTDenv_TD)
       #        plot(TD_now,TDenv_now);abline(0,1)
     
 
@@ -223,9 +227,10 @@ try(dev.off())
 
     for(t in 1:ncol(TD)){
       head(bxplTDenv_TD)
-      
+
       # (bxplTDenv_EXT),  (bxplTDenv_TD))[seq(from = t,to = ncol(TD)*5,by = ncol(TD))]
-      dat_plot=cbind(      abs(bxplTDtd_TD),        abs(bxplTDtd_TDsparse),      abs(bxplTDenv_TD),  abs(bxplTDenv_TDsparse))[seq(from = t,to = ncol(TD)*4,by = ncol(TD))]
+      dat_plot= cbind(      (bxplTDtd_TD),        (bxplTDtd_TDsparse),      (bxplTDenv_TD),  (bxplTDenv_TDsparse))[seq(from = t,to = ncol(TD)*4,by = ncol(TD))]
+      #boxplot(cbind(rnorm(mean=0.01,sd=.1,n = 100),rnorm(mean=10,sd=.1,n = 100),rnorm(mean=20,sd=.1,n = 100)))
       colnames(dat_plot)=  c("IMPobs - OBS",        "IMPobs - OSBsparse",  "IMPobsExt - OBS",  "IMPobsext - OBSsparse")
       dat_plot <- abs(dat_plot)
       
@@ -245,6 +250,8 @@ try(dev.off())
   }
   
 }
+
+
 
 
 dev.off()
