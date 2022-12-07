@@ -1,3 +1,4 @@
+# small error for SSD or LDMC, correct.
 
 #------------------------------------------------------------
 # define path
@@ -43,7 +44,7 @@ repnums=3
 #----------------------------------------
 # chose data
 #----------------------------------------
-t_choice="data_2"
+t_choice="data"
 if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
 if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","")}
 
@@ -88,13 +89,13 @@ table_now <- matrix(NA,ncol=8,nrow=length(trait_names))
 table_2 <- matrix(NA,ncol=8,nrow=length(trait_names))
 ix_trait=res$trait==trait_names[t]
 ix_trait[is.na(ix_trait)] <- FALSE
-t=1
+t=3
 for(t in 1:length(trait_names)){
   ix_trait=res$trait==trait_names[t]
   ix_trait[is.na(ix_trait)] <- FALSE
   
-  bxpl=res$value_pred[ix_trait]- res$value_obs[ix_trait]
-  bxplENV=resENV$value_pred[ix_trait]- resENV$value_obs[ix_trait]
+  bxpl=res$value_pred_zlog[ix_trait]- res$value_obs_zlog[ix_trait]
+  bxplENV=resENV$value_pred_zlog[ix_trait]- resENV$value_obs_zlog[ix_trait]
   
   table_now[t,1] <- quantile(abs(bxpl),probs = .25)
   table_now[t,2] <- quantile(abs(bxpl),probs = .5)
@@ -105,6 +106,7 @@ for(t in 1:length(trait_names)){
   table_now[t,7] <- quantile(abs(bxplENV),probs = .75)
   table_now[t,8] <- max(abs(bxplENV))
   
+  print(quantile(abs(bxpl),probs = 1)<c(dist(range(abs(res$value_obs)[ix_trait]))))
   print(quantile(abs(bxpl),probs = 1)<c(dist(range(abs(res$value_obs)[ix_trait]))))
   table_2[t,1] <- quantile(abs(bxpl),probs = .25)/c(dist(range(res$value_obs[ix_trait])))*100
   table_2[t,2] <- quantile(abs(bxpl),probs = .5)/c(dist(range(res$value_obs[ix_trait])))*100

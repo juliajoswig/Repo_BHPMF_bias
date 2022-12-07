@@ -2,28 +2,21 @@
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V2"
-list.files(file.path(origin,"_2021","script",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
 t_choices <- out$tsubs
 TDnos = out$TD_choices
 repnums = out$repnums
@@ -51,7 +44,7 @@ colz2=c("#d53e4f","#f46d43","#fdae61",
 #-------------------------------------------------------------------
 # chose trait data   
 #-------------------------------------------------------------------
-t_choice="data"
+t_choice="data_2"
 if(t_choice=="data"){RepNum=1}
 if(t_choice=="data_2"){RepNum=2}
 tx=0
@@ -61,7 +54,7 @@ tx=tx+1
 #-------------------------------------------------------------------
 # load trait data   
 #-------------------------------------------------------------------
-file.path(origin,"_2021","data","analyes","Point_wise","res.csv")
+file.path(originData,"analyes","Point_wise","res.csv")
 units <- c("mm2 mg-1","m","","","mm2")
 colz=colz1
 
@@ -70,18 +63,18 @@ colz=colz1
   # load Extended data
   # load TDenvelope
   ObsOrTD="Obs_obs"
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
   
   # load TD data
   # total trait data 
-  TD <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                          "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  TD_sparse <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                          "Obs_obs_TD","data","traitInfo.csv"),header=TRUE))[,-c(1,2)]
-  TDtd <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
+  TDtd <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
                                          "Obs_obs_TD","data","traitInfo_pred.csv"),header=TRUE))[,-c(1,2)]
-  TD_tax <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
+  TD_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
                                  "Obs_obs_TD","data","taxInfo.csv"), sep=",")
   colnames(TD_tax) <- c("ObservationID","Species","Genus","Family","Clade")
   head(TD_tax)
@@ -89,12 +82,12 @@ colz=colz1
   dim(TD_tax)
   # load Extended data
   # total trait data 
-  Env <- as.data.frame(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  Env <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                              "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
   summary(Env)
   Env <- Env[,colnames(Env)%in%colnames(TD)]
   summary(Env)
-  Env_tax <- read.table(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
+  Env_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
                                  "Obs_obs","data","taxInfo.csv"), sep=",")
   colnames(Env_tax) <- c("ObservationID","Species","Genus","Family","Clade")
   length(Env_tax[,tx]%in%TD_tax[,tx])
@@ -106,9 +99,9 @@ colz=colz1
   length(unique(Env_tax_c[,tx]))
   length(unique(TD_tax[,tx]))
   
-  list.files(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
+  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
   # predicted 
-  TDenv <- as.matrix(read.csv(file.path(origin,"_2021","data","_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
+  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
                                         "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
   TDenv
   head(TDtd)
@@ -136,6 +129,8 @@ count.fun <- function(input){
 Env[Env_tax_c$ObservationID%in%TD_tax$ObservationID,]
 
 # aggregate TD to taxon mean
+dim(TD)
+dim(TD_tax[,tx])
 TD_tx <- aggregate(TD,by=list(TD_tax[,tx]),FUN = mean.fun)
 TD_sparse_tx <- aggregate(TD_sparse,by=list(TD_tax[,tx]),FUN = mean.fun)
 TDtd_tx <- aggregate(TDtd,by=list(TD_tax[,tx]),FUN = mean.fun)
@@ -213,16 +208,18 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor)
   text(0.5, 0.5, txt, cex = cex * r) 
   text(.8, .8, Signif, cex=cex, col=2) 
 }
-if(tx==1&t_choice=="data"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_indMean.pdf"))}
-if(tx==2&t_choice=="data"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_specMean.pdf"))}
-if(tx==3&t_choice=="data"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_genMean.pdf"))}
-if(tx==4&t_choice=="data"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_famMean.pdf"))}
-if(tx==5&t_choice=="data"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_cladMean.pdf"))}
-if(tx==1&t_choice=="data_2"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_indMean_TD2.pdf"))}
-if(tx==2&t_choice=="data_2"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_specMean_TD2.pdf"))}
-if(tx==3&t_choice=="data_2"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_genMean_TD2.pdf"))}
-if(tx==4&t_choice=="data_2"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_famMean_TD2.pdf"))}
-if(tx==5&t_choice=="data_2"){pdf(file = file.path(origin,"_2021","figures","Figure_2","Pairs_cladMean_TD2.pdf"))}
+if(tx==1&t_choice=="data"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_indMean.pdf"))}
+if(tx==2&t_choice=="data"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_specMean.pdf"))}
+if(tx==3&t_choice=="data"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_genMean.pdf"))}
+if(tx==4&t_choice=="data"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_famMean.pdf"))}
+if(tx==5&t_choice=="data"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_cladMean.pdf"))}
+if(tx==1&t_choice=="data_2"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_indMean_TD2.pdf"))}
+if(tx==2&t_choice=="data_2"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_specMean_TD2.pdf"))}
+if(tx==3&t_choice=="data_2"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_genMean_TD2.pdf"))}
+if(tx==4&t_choice=="data_2"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_famMean_TD2.pdf"))}
+if(tx==5&t_choice=="data_2"){pdf(file = file.path(origin,"figures","Figure_2","Pairs_cladMean_TD2.pdf"))}
+if(t_choice=="data"){colnames(plot_dat) <- c("OBS", "OBSsparse","TRY17_sparse","IMPobs","IMPobsext")}
+if(t_choice=="data_2"){colnames(plot_dat) <- c("OBS2", "OBS2sparse","TRY17_2_sparse","IMP2obs","IMP2obsext")}
 pairs(plot_dat, lower.panel=panel.smooth, upper.panel=panel.cor)
 dev.off()
 }

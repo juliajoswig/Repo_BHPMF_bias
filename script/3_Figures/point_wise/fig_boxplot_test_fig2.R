@@ -1,38 +1,22 @@
 
-# get per observed point value: 
-# - error (pred-obs)
-# - average distance to all other points observed 
-# - Silhouette index for this group (or calculate somewhere else...?)  
-# - ORIGINAL Silhouette index for this group (or calculate somewhere else...?)  
-# - DEVIATION Silhouette index for this group (or calculate somewhere else...?)  
-# - number of values available
-# - original number of values available
-
 #------------------------------------------------------------
 # define path
 #------------------------------------------------------------
-is.it.on.cluster=FALSE
-if(is.it.on.cluster){
-  setwd("/..")
-  setwd(file.path("Net","Groups","BGI"))
-  origin=file.path("work_1","2016_GapFilling")}
-if(!is.it.on.cluster){
-  setwd("/..")
-  origin = "Volumes/bgi/work_1/2016_GapFilling"
-}
-Version_now="V1"
-list.files(file.path(origin,"_2021","script","analysis",Version_now))
+setwd("/..")
+origin = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_git"
+originData = "Volumes/Data_JJoswig/BGC/projects_BGC/2016_GapFilling/Repo_data"
+list.files(file.path(origin,"script"))
 
 #------------------------------------------------------------
 # load some functions
 #------------------------------------------------------------
-source(file.path(origin,"_2021","script","analysis",Version_now,"helper_scripts","fn_load_functions.R"))
-load_functions(origin,Version_now)
+source(file.path(origin,"script","helper_scripts","fn_load_functions.R"))
+load_functions(origin)
 
 #------------------------------------------------------------
 # define data set approaches/choices
 #------------------------------------------------------------
-out <- choices()
+out <- choices(originData)
 tsubs <- out$tsubs
 TD_choices = out$TD_choices
 repnums = out$repnums
@@ -51,17 +35,30 @@ new.sd.fun = out$new.sd.fun
 #-------------------------------------------------------------------
 # load trait data   
 #-------------------------------------------------------------------
-file.path(origin,"_2021","data","analyes","Point_wise","res.csv")
+file.path(originData,"analyes","Point_wise","res.csv")
 colorset1 <- c("#b2e2e2","#66c2a4","#2ca25f","#006d2c")
+t_choice="data"
+if(t_choice=="data"){RepNum=1}
+if(t_choice=="data_2"){RepNum=2}
+#res <- read.csv(file=file.path(originData,"analyes","Point_wise","res.csv"))
 
-res <- read.csv(file=file.path(origin,"_2021","data","analyes","Point_wise","res.csv"))
+ObsOrTD="Obs_obs_TD"
+Percent=80
+RepNum=1
+res <- read.csv(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_2021_08.csv")))
+
+
+ObsOrTD="Obs_obs"
+Percent=80
+RepNum=1
+resENV <- read.csv(file.path(originData,"analyses","Point_wise",RepNum,t_choice,ObsOrTD,Percent,paste0("res_2021_08.csv")))
 
   res <- res[,colSums(!is.na(res))!=0]
   trait_names=as.vector(unique(res$trait))
   trait_names <- trait_names[!is.na(trait_names)]
   missingness = unique(as.vector(res$missingness))
   missingness <- missingness[!is.na(missingness)]
-  summary(res_now$value_obs)
+  summary(res$value_obs)
   m=1
   t=2
   w=1
@@ -583,7 +580,7 @@ length(bxpl_fam)
   dev.off()
   
   
-  res <- read.csv(file=file.path(origin,"_2021","data","analyes","Point_wise","res.csv"))
+  res <- read.csv(file=file.path(originData,"analyes","Point_wise","res.csv"))
   
   res <- res[,colSums(!is.na(res))!=0]
   trait_names=as.vector(unique(res$trait))

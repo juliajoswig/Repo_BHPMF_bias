@@ -116,8 +116,8 @@ out <- choices(originData)
             try(rm(pca_out))
           }
         } 
-        
-        # sil
+
+        # Sil
         # set path
         if(Index_now=="Sil"){
             print("Silhouette Index")
@@ -175,11 +175,9 @@ out <- choices(originData)
               
             }
           }
-          
 
-
-      # RMSE
-      if(Index_now == "RMSE"){
+        # RMSE
+        if(Index_now == "RMSE"){
         print("RMSE")            
 
         path_rmse <-  file.path(originData,"analyses",
@@ -226,7 +224,6 @@ out <- choices(originData)
             }
         } 
 
-      
         # Corr
       if(Index_now == "Corr"){
         cor_path =      file.path(originData,"analyses","Correl",t_choice,ObsOrTD,Percent,RepNum,paste0("Correl.csv"))
