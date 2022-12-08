@@ -45,7 +45,7 @@ out <- choices(originData)
 #-------------------------------------------------------------------
 # chose trait data   
 #-------------------------------------------------------------------
-t_choice="data_1"
+t_choice="data_2"
 if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
 if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","")}
 if(t_choice=="data"){RepNum=1}
@@ -58,7 +58,7 @@ tx=1 #(0=indiv,1=spec,2=genus,3=family,4=clades)
 for(tx in 0:4){
   tx=tx+1
   par(mfrow=c(4,4))
-  {
+  
     
     #-------------------------------------------------------------------
     # load trait data   
@@ -125,7 +125,7 @@ for(tx in 0:4){
     
     
     #_________________________________________________
-    # zlog based on TD
+    # zlog based on OBS 0%
     #-------------------------------------------------
     {
       res <- list()
@@ -135,7 +135,7 @@ for(tx in 0:4){
       res$TD_sparse <- TD_sparse
       #res$Env_sparse_tx <- Env_sparse_tx
       for(t in 1:length(trait_names)){
-        whichcol=which(colnames(TD)==trait_names[t])
+        whichcol=which(colnames(res$TD)==trait_names[t])
         
         TDmn=mean(log(TD[,whichcol]),na.rm = TRUE)
         TDsd=sd(log(TD[,whichcol]),na.rm = TRUE)
@@ -196,120 +196,108 @@ for(tx in 0:4){
     
     
  #------------------------------------------------------------------------
-      # residuals of TDtd to TD: 
-      bxplTDtd_TD = TDtd_tx - TD_tx
-      summary(bxplTDtd_TD)
-      #        plot(TDtd_now,TD_now);abline(0,1)
-      # residuals of TDtd to TDsparse: 
-      bxplTDtd_TDsparse=TDtd_tx- TD_sparse_tx
-      summary(bxplTDtd_TDsparse)
-      #        plot(TDtd_now,TD_sparse_now);abline(0,1)
-      # residuals of TDtd to EXT: 
-#      dim(TD_tax$ID%in%Env_tax_c$ID)
-#      bxplTDtd_EXT=TDtd_now- Env_sparse_now[TD_tax$ID%in%Env_tax_c$ID,]
-#      #        plot(TDtd_now,Env_sparse_now);abline(0,1)
-#      # residuals of TDenv to EXT: 
-      bxplTDenv_TDsparse=TDenv_tx - TD_sparse_tx
-      summary(bxplTDenv_TDsparse)
-      #        plot(TDenv_now,Env_sparse_now);abline(0,1)
-      # residuals of TDenv to TD: 
-      bxplTDenv_TD = TDenv_tx - TD_tx
-      summary(bxplTDenv_TD)
-      #        plot(TD_now,TDenv_now);abline(0,1)
-    
 
-    
+    colz=c("#b2182b","#ef8a62","#fddbc7","#d1e5f0","#67a9cf","#2166ac")
 try(dev.off())
-    par(mfrow=c(1,1),mar=c(10,4,1,1))
-    pdf(file=file.path(origin,"figures","Figure_2","boxplots",paste0(txs[tx],"_boxplots_",t_choice,".pdf")),width=8,height=2.3,pointsize = 9)
-    par(mfrow=c(1,6),mar=c(12,4,1,1))
-    t=1
-
+    pdf(file=file.path(origin,"figures","Figure_2","correls",paste0(txs[tx],"_corsTot_",t_choice,".pdf")),width=12,height=6,pointsize = 9)
+    par(mfrow=c(1,2),mar=c(4,6,1,1))
+    {   
+      #OBS
+      t=1
+      dat_ploto= cbind((TD_tx),(TDtd_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+      colnames(dat_ploto) =  c("OBS","IMPobs")
+      plot(dat_ploto,cex.lab=2,col=colz[t],pch=16,
+           xlim=c(-4,4),ylim=c(-4,4))
+       
     for(t in 1:ncol(TD)){
-      head(bxplTDenv_TD)
-
-      # (bxplTDenv_EXT),  (bxplTDenv_TD))[seq(from = t,to = ncol(TD)*5,by = ncol(TD))]
-      dat_plot= cbind(      (bxplTDtd_TD),        (bxplTDtd_TDsparse),      (bxplTDenv_TD),  (bxplTDenv_TDsparse))[seq(from = t,to = ncol(TD)*4,by = ncol(TD))]
-      #boxplot(cbind(rnorm(mean=0.01,sd=.1,n = 100),rnorm(mean=10,sd=.1,n = 100),rnorm(mean=20,sd=.1,n = 100)))
-      colnames(dat_plot)=  c("IMPobs - OBS",        "IMPobs - OSBsparse",  "IMPobsExt - OBS",  "IMPobsext - OBSsparse")
-      dat_plot <- abs(dat_plot)
-      
-      boxplot(dat_plot,main=trait_names[t],ylim=c(0,
-                                                  max(apply(dat_plot,MARGIN = 2,quantile,prob=.95,na.rm=TRUE))),col=colz,las=2,ylab=paste("abs(zlog) distance"))
-      rect(xleft = 0,ybottom = min(apply(dat_plot,MARGIN = 2,quantile,prob=0,na.rm=TRUE))-1,xright = 6,ytop = median(dat_plot[,1],na.rm = TRUE),col=colz2[1])
-      rect(xleft = 0,ybottom = median(dat_plot[,1],na.rm = TRUE),xright = 6,ytop = max(apply(dat_plot,MARGIN = 2,quantile,prob=1,na.rm=TRUE))+1,col=colz2[3])
-      abline(h = median(dat_plot[,1],na.rm = TRUE),col=colz2[8],lwd=1)
-#      abline(v = 3.5,col="white",lwd=1.5)
-      boxplot(dat_plot,main=trait_names[t],ylim=c(min(apply(dat_plot,MARGIN = 2,quantile,prob=.01,na.rm=TRUE)),
-                                                  max(apply(dat_plot,MARGIN = 2,quantile,prob=.99,na.rm=TRUE))),
-              col=colz,las=2,ylab=paste("zlog(",units[t],")"),
-              add=TRUE,cex.lab=1.5)
+      dat_ploto= cbind((TD_tx),(TDtd_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+      #OBS
+      points(dat_ploto,cex.lab=2,col=colz[t],pch=16)
     }   
+      abline(0,1,col="gray",lty=2,lwd=2)
+      dat_plotot= cbind(unlist(TD_tx),unlist(TDtd_tx))
+      coro <- cor(dat_plotot)
+      mtext(paste0("Pearson corr. coeff. = ",round(coro[1,2],digits=2),"  "),cex=2,
+            side = 1, adj = 1, line = - 3)
+      legend("topleft",trait_names, pch=16, title= "Traits", inset = .05, cex=1.4,
+             col=colz[1:length(trait_names)])
+          
+#--------------------------------------------------------------    
+      #Ext
+      t=1
+      dat_plote= cbind(      (TD_tx),   (TDenv_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+      colnames(dat_plote)=  c("OBS","IMPobsExt")
+      plot(dat_plote,cex.lab=2,col=colz[t],pch=16,
+           xlim=c(-4,4),ylim=c(-4,4))
+      
+      
+      for(t in 1:ncol(TD)){
+        dat_plote= cbind(      (TD_tx),   (TDtd_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+        
+        #Ext
+        points(dat_plote,cex.lab=2,col=colz[t],pch=16)
+      }   
+      abline(0,1,col="gray",lty=2,lwd=2)
+      dat_plotet= cbind(unlist(TD_tx),unlist(TDenv_tx))
+      core <- cor(dat_plotet)
+      mtext(paste0("Pearson corr. coeff. = ",round(core[1,2],digits=2),"  "),cex=2,
+            side = 1, adj = 1, line = - 3)
+      legend("topleft",trait_names, pch=16, title= "Traits", inset = .05, cex=1.4,
+             col=colz[1:length(trait_names)])
+      
+    } 
+      dev.off()
+    
+    
+    pdf(file=file.path(origin,"figures","Figure_2","correls",paste0(txs[tx],"_cors_",t_choice,".pdf")),width=12,height=6,pointsize = 9)
+    par(mfrow=c(1,2),mar=c(4,6,1,1))
+    t=1
+    {
+    for(t in 1:ncol(TD)){
+      dat_ploto= cbind(      (TD_tx),   (TDtd_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+      dat_plote= cbind(      (TD_tx),   (TDenv_tx))[seq(from = t,to = ncol(TD)*2,by = ncol(TD))]
+    
+      #OBS
+      colnames(dat_ploto)=  c("OBS","IMPobs")
+      coro <- cor(dat_ploto)
+      plot(dat_ploto,cex.lab=2,col=colz[t])
+      abline(0,1,col="gray",lty=2,lwd=2)
+      mtext(paste0("Pearson corr. coeff. = ",round(coro[1,2],digits=2),"  "),cex=2,
+            side = 1, adj = 1, line = - 3)
+       
+    
+      colnames(dat_plote)=  c("OBS","IMPobsExt")
+      core <- cor(dat_plote)
+      plot(dat_plote,cex.lab=2,col=colz[t])
+      abline(0,1,col="gray",lty=2,lwd=2)
+      mtext(paste0("Pearson corr. coeff. = ",round(core[1,2],digits=2),"  "),cex=1.5,
+            side = 1, adj = 1, line = - 3)
+      }   
+
+} 
     dev.off()
     
   }
   
-}
 
 
 
+
+pdf(file=file.path(origin,"figures","Figure_2",paste0(txs[tx],"_xy_",t_choice,".pdf")),width=8,height=6,pointsize = 9)
+
+plot(unlist(TD_tx),unlist(TDtd_tx), pch=16, col = "blue",
+     xlab="OBS",ylab="IMPobs", cex.lab=2,
+     xlim=c(min(c(unlist(TD_tx))),max(c(unlist(TD_tx)))),
+     ylim=c(min(c(unlist(TD_tx))),max(c(unlist(TD_tx)))))
+abline(0,1)
+cor_now <- cor(unlist(TD_tx),unlist(TDtd_tx))
+text(0,2,paste0("Pearson cor = ",round(cor_now,digits = 2)),cex=2)
+plot(unlist(TD_tx),unlist(TDenv_tx),pch=16, col = "blue",
+     xlab="OBS",ylab="IMPobsExt",cex.lab=2,
+     xlim=c(min(c(unlist(TD_tx))),max(c(unlist(TD_tx)))),
+     ylim=c(min(c(unlist(TD_tx))),max(c(unlist(TD_tx)))))
+abline(0,1)
+cor_now <- cor(unlist(TD_tx),unlist(TDenv_tx))
+text(0,2,paste0("Pearson cor = ",round(cor_now,digits = 2)),cex=2)
 
 dev.off()
-
-
-
-{
-  # load Envelope data
-  # load TDenvelope
-  ObsOrTD="Obs_obs"
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),ObsOrTD,"data"))
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
-  
-  # load TD data
-  # total trait data 
-  TD <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
-                                         "Obs_obs_TD","data","traitInfoTD_obs.csv"),header=TRUE))[,-c(1,2)]
-  TD_sparse <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
-                                                "Obs_obs_TD","data","traitInfoTD_obs.csv"),header=TRUE))[,-c(1,2)]
-  TDtd <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_80"),
-                                           "Obs_obs_TD","data","traitInfoTD_pred.csv"),header=TRUE))[,-c(1,2)]
-  TD_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_0"),
-                                 "Obs_obs_TD","data","taxInfo.csv"), sep=",")
-  colnames(TD_tax) <- c("ObservationID","Species","Genus","Family","Clade")
-  head(TD_tax)
-  colnames(TD_tax)
-  dim(TD_tax)
-  # load Envelope data
-  # total trait data 
-  Env <- as.data.frame(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                          "Obs_obs","data","traitInfo.csv"),header=TRUE))[,-1]
-  Env <- Env[,colnames(Env)%in%colnames(TD)]
-  sum(colnames(Env)==colnames(TD))==ncol(Env)
-  
-  Env_tax <- read.table(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","0"),
-                                  "Obs_obs","data","taxInfo.csv"), sep=",")
-  colnames(Env_tax) <- c("ObservationID","Species","Genus","Family","Clade")
-  dim(Env_tax)==dim(Env)
-  Env <- Env[Env_tax[,tx]%in%TD_tax[,tx],]
-  Env_tax_c <- Env_tax[Env_tax[,tx]%in%TD_tax[,tx],]
-  
-  mtch <- match(TD_tax[,tx],Env_tax_c[,tx])
-  print(sum(TD_tax[,tx]==Env_tax_c[mtch,tx])==length(TD_tax[,tx]))
-  Env_tax_c<- Env_tax_c[mtch,]
-  Env<- Env[mtch,]
-  
-  list.files(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),ObsOrTD,"data"))
-  # predicted 
-  TDenv <- as.matrix(read.csv(file.path(originData,"_runs",paste0("Rep_",RepNum),t_choice,paste0("p_","80"),
-                                        "Obs_obs","data","traitInfoTD_pred.csv")))[,-c(1,2)]
-  TDenv
-  head(TDtd)
-  head(TDenv)
-  head(TD_sparse)
-  head(Env)
-  par(mfrow=c(1,1))
-  plot(TD[,1],TDtd[,1])
-  abline(0,1)
-  plot(TD[,1],Env[,1])      
-  abline(0,1)
-}

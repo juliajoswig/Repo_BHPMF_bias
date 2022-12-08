@@ -45,7 +45,7 @@ out <- choices(originData)
 #-------------------------------------------------------------------
 # chose trait data   
 #-------------------------------------------------------------------
-t_choice="data_1"
+t_choice="data"
 if(t_choice=="data"){units <- c("mm2 mg-1","m","mm2 mg-1","mg g-1","mg g-1","g m-2")}
 if(t_choice=="data_2"){units <- c("mm2 mg-1","m","","","")}
 if(t_choice=="data"){RepNum=1}
